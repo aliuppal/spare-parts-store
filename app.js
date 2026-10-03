@@ -5,7 +5,7 @@
   // ---------- helpers ----------
   const $ = (s, r = document) => r.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const money = (n) => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money = (n) => 'Rs ' + Math.round(Number(n)).toLocaleString('en-US'); // PKR, whole rupees
   const r2 = (n) => Math.round(n * 100) / 100;
   const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   const icon = (id, cls = '') => `<svg class="icon ${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
@@ -30,8 +30,9 @@
   const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
   const catName = (id) => (CATEGORIES.find((c) => c.id === id) || {}).name || id;
   const PAGE = 9;
-  const FREE_SHIP = 75, STD_SHIP = 9.95, NEXT_DAY = 24.95, TAX = 0.0825;
-  const PRICE_CEIL = Math.ceil(Math.max(...PRODUCTS.map((p) => p.price)) / 100) * 100;
+  const FREE_SHIP = 20000, STD_SHIP = 2500, NEXT_DAY = 7000, TAX = 0.0825; // PKR
+  const PRICE_STEP = 1000;
+  const PRICE_CEIL = Math.ceil(Math.max(...PRODUCTS.map((p) => p.price)) / 10000) * 10000;
   const YEARS = (() => { const lo = Math.min(...VEHICLES.map((v) => v.years[0])); const hi = Math.max(...VEHICLES.map((v) => v.years[1])); const out = []; for (let y = hi; y >= lo; y--) out.push(y); return out; })();
   const POS = { front: 'Front axle', rear: 'Rear axle', both: 'Front & rear', na: 'N/A' };
   const GRADE = { oem: 'OEM / OE-equivalent', performance: 'Aftermarket performance' };
@@ -290,7 +291,7 @@
     f.brands.forEach((v) => chips.push(['brand', v, v]));
     f.grades.forEach((v) => chips.push(['grade', v, GRADE[v]]));
     f.positions.forEach((v) => chips.push(['pos', v, POS[v]]));
-    if (f.min > 0 || f.max < PRICE_CEIL) chips.push(['price', '', `$${f.min}–$${f.max}${f.max >= PRICE_CEIL ? '+' : ''}`]);
+    if (f.min > 0 || f.max < PRICE_CEIL) chips.push(['price', '', `${money(f.min)}–${money(f.max)}${f.max >= PRICE_CEIL ? '+' : ''}`]);
     if (f.inStock) chips.push(['inStock', '', 'In stock']);
     if (f.shipsToday) chips.push(['shipsToday', '', 'Ships today']);
     if (state.vehicle && f.fitMode === 'all') chips.push(['fit', '', 'Incl. non-fitting parts']);
@@ -334,10 +335,10 @@
         ${facet('price', 'Price', `
           <div class="range" data-range>
             <div class="range-rail"></div><div class="range-fill" style="left:${lo}%;right:${100 - hi}%"></div>
-            <input type="range" min="0" max="${PRICE_CEIL}" step="10" value="${f.min}" data-f="min" data-key="${ctx}:min" aria-label="Minimum price">
-            <input type="range" min="0" max="${PRICE_CEIL}" step="10" value="${f.max}" data-f="max" data-key="${ctx}:max" aria-label="Maximum price">
+            <input type="range" min="0" max="${PRICE_CEIL}" step="${PRICE_STEP}" value="${f.min}" data-f="min" data-key="${ctx}:min" aria-label="Minimum price">
+            <input type="range" min="0" max="${PRICE_CEIL}" step="${PRICE_STEP}" value="${f.max}" data-f="max" data-key="${ctx}:max" aria-label="Maximum price">
           </div>
-          <div class="range-values spec-sm"><span data-out="min">$${f.min}</span><span data-out="max">$${f.max}${f.max >= PRICE_CEIL ? '+' : ''}</span></div>`)}
+          <div class="range-values spec-sm"><span data-out="min">${money(f.min)}</span><span data-out="max">${money(f.max)}${f.max >= PRICE_CEIL ? '+' : ''}</span></div>`)}
         ${posAll.length ? facet('pos', 'Axle position', posAll.map((k) => optHTML(ctx, 'pos', k, POS[k], posCounts[k] || 0, f.positions.has(k))).join('')) : ''}
         ${facet('avail', 'Availability', `
           <label class="switch"><span>In stock only</span><input type="checkbox" role="switch" data-f="inStock" data-key="${ctx}:inStock"${f.inStock ? ' checked' : ''}></label>
@@ -479,7 +480,7 @@
               </div>
               <button class="btn btn-secondary btn-lg btn-block" type="button" data-act="buy-now" data-id="${p.id}">Buy now</button>`
             : `<div class="notice notice-warn">${icon('info', 'icon-sm')}Out of stock. Check back soon, or compare similar parts below.</div>`}
-            <p class="spec-sm muted" style="display:flex;gap:6px;align-items:center">${icon('truck', 'icon-sm')}Free standard shipping over $75 · 60-day returns</p>
+            <p class="spec-sm muted" style="display:flex;gap:6px;align-items:center">${icon('truck', 'icon-sm')}Free standard shipping over ${money(FREE_SHIP)} · 60-day returns</p>
           </div>
           <p>${esc(p.desc)}</p>
           <div class="panel"><div class="section-title"><h2 class="label-caps">Technical specifications</h2></div>
@@ -523,7 +524,7 @@
     const core = r2(items.reduce((s, x) => s + (x.p.core || 0) * x.qty, 0));
     const count = items.reduce((s, x) => s + x.qty, 0);
     const ship = !items.length ? 0 : method === 'nextday' ? NEXT_DAY : sub >= FREE_SHIP ? 0 : STD_SHIP;
-    const tax = r2(sub * TAX);
+    const tax = Math.round(sub * TAX);
     return { items, sub, core, count, ship, tax, total: r2(sub + core + ship + tax) };
   }
   function lineHTML(x, editable) {
@@ -1053,13 +1054,13 @@
     if (t.dataset.f === 'min' || t.dataset.f === 'max') {
       const box = t.closest('[data-range]');
       const [lo, hi] = box.querySelectorAll('input');
-      if (+lo.value > +hi.value - 10) { if (t === lo) lo.value = +hi.value - 10; else hi.value = +lo.value + 10; }
+      if (+lo.value > +hi.value - PRICE_STEP) { if (t === lo) lo.value = +hi.value - PRICE_STEP; else hi.value = +lo.value + PRICE_STEP; }
       const fill = box.querySelector('.range-fill');
       fill.style.left = (lo.value / PRICE_CEIL) * 100 + '%';
       fill.style.right = 100 - (hi.value / PRICE_CEIL) * 100 + '%';
       const out = box.nextElementSibling;
-      out.querySelector('[data-out="min"]').textContent = '$' + lo.value;
-      out.querySelector('[data-out="max"]').textContent = '$' + hi.value + (+hi.value >= PRICE_CEIL ? '+' : '');
+      out.querySelector('[data-out="min"]').textContent = money(+lo.value);
+      out.querySelector('[data-out="max"]').textContent = money(+hi.value) + (+hi.value >= PRICE_CEIL ? '+' : '');
       return;
     }
     if (t.closest && t.closest('#co-form') && t.classList.contains('input')) {

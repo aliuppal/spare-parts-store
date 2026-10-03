@@ -1,5 +1,5 @@
 /* ApexAuto catalog — SAMPLE DATA for the demo storefront.
-   Prices, stock, ratings and part numbers are illustrative, not real listings.
+   Prices (PKR), stock, ratings and part numbers are illustrative, not real listings.
    `fits` holds vehicle ids from VEHICLES, or the string "universal". */
 
 window.VEHICLES = [
@@ -28,7 +28,7 @@ window.PRODUCTS = [
   {
     id: "p-001", sku: "BRM-09.C892.11", oem: "34-11-6-860-911", brand: "Brembo", grade: "performance",
     title: "Brembo GT-S Drilled Front 2-Piece Brake Rotor Kit", category: "brakes", sub: "Rotors",
-    art: "rotor", position: "front", price: 429.99, was: 489.00, unit: "Per axle pair",
+    art: "rotor", position: "front", price: 120399, was: 136899, unit: "Per axle pair",
     rating: 4.9, reviews: 128, stock: 8, shipsToday: true,
     fits: ["bmw-g20-m340i"],
     specs: [["Diameter", "374 mm"], ["Thickness", "36 mm"], ["Material", "High-carbon cast iron"], ["Vane design", "Bi-directional curved, 48 vanes"], ["Hat finish", "Black anodized aluminium"]],
@@ -37,7 +37,7 @@ window.PRODUCTS = [
   {
     id: "p-002", sku: "PS-Z26-1504", oem: "34-21-6-885-442", brand: "PowerStop", grade: "performance",
     title: "PowerStop Z26 Carbon-Fiber Ceramic Brake Pad Set (Front & Rear)", category: "brakes", sub: "Pads",
-    art: "pads", position: "both", price: 164.50, unit: "Front + rear set",
+    art: "pads", position: "both", price: 46099, unit: "Front + rear set",
     rating: 4.8, reviews: 312, stock: 24, shipsToday: true, freeNextDay: true,
     fits: ["bmw-g20-m340i", "bmw-g20-330i"],
     specs: [["Compound", "Carbon-fiber ceramic, low dust"], ["Hardware", "Stainless shims included"], ["Max operating temp", "1,500 °F"], ["Wear sensor", "Not included — reuse OE"]],
@@ -46,7 +46,7 @@ window.PRODUCTS = [
   {
     id: "p-003", sku: "BOS-QC-50011", oem: "34-21-6-860-912", brand: "Bosch", grade: "oem",
     title: "Bosch QuietCast Premium Coated Rear Disc Brake Rotor", category: "brakes", sub: "Rotors",
-    art: "rotor-plain", position: "rear", price: 118.95, unit: "Each",
+    art: "rotor-plain", position: "rear", price: 33299, unit: "Each",
     rating: 4.7, reviews: 89, stock: 15, shipsToday: true,
     fits: ["bmw-g20-m340i", "bmw-g20-330i"],
     specs: [["Diameter", "345 mm vented"], ["Balancing", "100% precision balanced"], ["Coating", "Al-Zn anti-corrosion"], ["Min. thickness", "22.4 mm"]],
@@ -55,7 +55,7 @@ window.PRODUCTS = [
   {
     id: "p-004", sku: "ST-950.34503", oem: null, brand: "StopTech", grade: "performance",
     title: "StopTech Stainless Steel Braided Brake Line Kit (4-Corner)", category: "brakes", sub: "Lines & Hoses",
-    art: "lines", position: "both", price: 142.00, unit: "Complete set",
+    art: "lines", position: "both", price: 39799, unit: "Complete set",
     rating: 4.9, reviews: 74, stock: 3, shipsToday: true,
     fits: ["bmw-g20-m340i", "bmw-g20-330i", "vw-golf-gti"],
     specs: [["Core hose", "Extruded PTFE inner tube"], ["Outer braid", "304 stainless weave"], ["Fittings", "Zinc-plated steel banjo"], ["Compliance", "DOT FMVSS 106"]],
@@ -64,7 +64,7 @@ window.PRODUCTS = [
   {
     id: "p-005", sku: "AKE-EUR1505", oem: null, brand: "Akebono", grade: "oem",
     title: "Akebono EURO Ultra-Premium Ceramic Front Brake Pads", category: "brakes", sub: "Pads",
-    art: "pads", position: "front", price: 89.99, unit: "Front axle",
+    art: "pads", position: "front", price: 25199, unit: "Front axle",
     rating: 4.8, reviews: 204, stock: 19,
     fits: ["bmw-g20-330i", "vw-golf-gti", "toyota-camry-25", "toyota-camry-35"],
     specs: [["Compound", "Ultra-premium ceramic"], ["Rotor wear", "Very low"], ["Noise control", "OE-level acoustic shims"], ["Dust", "Ultra-low"]],
@@ -73,7 +73,7 @@ window.PRODUCTS = [
   {
     id: "p-006", sku: "BIL-24-275226", oem: null, brand: "Bilstein", grade: "performance",
     title: "Bilstein B8 Performance Plus Monotube Front Shock Absorber", category: "suspension", sub: "Shocks & Struts",
-    art: "shock", position: "front", price: 289.00, unit: "Per unit",
+    art: "shock", position: "front", price: 80899, unit: "Per unit",
     rating: 5.0, reviews: 46, stock: 6,
     fits: ["bmw-g20-m340i", "bmw-g20-330i"],
     specs: [["Design", "46 mm inverted monotube"], ["Application", "Lowered M Sport (up to 30 mm)"], ["Valving", "Vehicle-specific digressive"], ["Warranty", "Limited lifetime"]],
@@ -82,7 +82,7 @@ window.PRODUCTS = [
   {
     id: "p-007", sku: "EIB-E10-20-012", oem: null, brand: "Eibach", grade: "performance",
     title: "Eibach Pro-Kit Performance Lowering Springs", category: "suspension", sub: "Springs",
-    art: "spring", position: "both", price: 329.00, unit: "Set of 4",
+    art: "spring", position: "both", price: 92099, unit: "Set of 4",
     rating: 4.6, reviews: 158, stock: 11, shipsToday: true,
     fits: ["ford-f150-35", "ford-f150-50"],
     specs: [["Drop (front)", "1.0 in"], ["Drop (rear)", "1.4 in"], ["Rate type", "Progressive"], ["Finish", "Powder coat"]],
@@ -91,7 +91,7 @@ window.PRODUCTS = [
   {
     id: "p-008", sku: "MOOG-K750118", oem: "4L3Z-3050-A", brand: "Moog", grade: "oem",
     title: "Moog Problem Solver Front Lower Ball Joint", category: "suspension", sub: "Ball Joints",
-    art: "balljoint", position: "front", price: 54.79, unit: "Each",
+    art: "balljoint", position: "front", price: 15299, unit: "Each",
     rating: 4.5, reviews: 391, stock: 42, shipsToday: true,
     fits: ["ford-f150-35", "ford-f150-50"],
     specs: [["Type", "Press-in, greaseable"], ["Bearing", "Powdered-metal gusher"], ["Boot", "Polyurethane"], ["Torque (castle nut)", "85 ft-lb"]],
@@ -100,7 +100,7 @@ window.PRODUCTS = [
   {
     id: "p-009", sku: "NGK-97968", oem: "12-12-0-039-664", brand: "NGK", grade: "oem",
     title: "NGK Laser Iridium Spark Plug", category: "engine", sub: "Spark Plugs",
-    art: "plug", position: "na", price: 17.49, unit: "Each — engine takes 6",
+    art: "plug", position: "na", price: 4899, unit: "Each — engine takes 6",
     rating: 4.9, reviews: 512, stock: 240, shipsToday: true,
     fits: ["bmw-g20-m340i"],
     specs: [["Gap (pre-set)", "0.028 in / 0.7 mm"], ["Thread", "M12 × 1.25"], ["Reach", "26.5 mm"], ["Hex", "14 mm bi-hex"]],
@@ -109,7 +109,7 @@ window.PRODUCTS = [
   {
     id: "p-010", sku: "BOS-0221504470", oem: "12-13-8-616-153", brand: "Bosch", grade: "oem",
     title: "Bosch Ignition Coil Pack", category: "engine", sub: "Ignition Coils",
-    art: "coil", position: "na", price: 48.90, was: 56.00, unit: "Each",
+    art: "coil", position: "na", price: 13699, was: 15699, unit: "Each",
     rating: 4.7, reviews: 233, stock: 0,
     fits: ["bmw-g20-m340i", "bmw-g20-330i"],
     specs: [["Output", "40 kV"], ["Connector", "3-pin"], ["Boot length", "102 mm"]],
@@ -118,7 +118,7 @@ window.PRODUCTS = [
   {
     id: "p-011", sku: "GAT-K060923", oem: "AT4Z-8620-A", brand: "Gates", grade: "oem",
     title: "Gates Micro-V Serpentine Belt", category: "engine", sub: "Belts",
-    art: "belt", position: "na", price: 38.99, unit: "Each",
+    art: "belt", position: "na", price: 10899, unit: "Each",
     rating: 4.8, reviews: 177, stock: 33, shipsToday: true,
     fits: ["ford-f150-35", "ford-f150-50"],
     specs: [["Ribs", "6"], ["Effective length", "92.4 in"], ["Material", "EPDM"]],
@@ -127,7 +127,7 @@ window.PRODUCTS = [
   {
     id: "p-012", sku: "MAN-HU6020Z", oem: "11-42-8-575-211", brand: "Mann-Filter", grade: "oem",
     title: "Mann-Filter Oil Filter Cartridge Kit", category: "filters", sub: "Oil Filters",
-    art: "oilfilter", position: "na", price: 14.95, unit: "Each",
+    art: "oilfilter", position: "na", price: 4199, unit: "Each",
     rating: 4.9, reviews: 846, stock: 310, shipsToday: true,
     fits: ["bmw-g20-m340i", "bmw-g20-330i"],
     specs: [["Type", "Cartridge, metal-free"], ["Includes", "O-rings, drain plug washer"], ["Change interval", "10,000 mi / 1 yr"]],
@@ -136,7 +136,7 @@ window.PRODUCTS = [
   {
     id: "p-013", sku: "KN-33-2481", oem: null, brand: "K&N", grade: "performance",
     title: "K&N Washable High-Flow Panel Air Filter", category: "filters", sub: "Air Filters",
-    art: "airfilter", position: "na", price: 69.99, unit: "Each",
+    art: "airfilter", position: "na", price: 19599, unit: "Each",
     rating: 4.6, reviews: 402, stock: 27, shipsToday: true,
     fits: ["honda-civic-15t", "honda-civic-20"],
     specs: [["Media", "Oiled cotton gauze"], ["Service interval", "Up to 50,000 mi"], ["Dimensions", "10.6 × 8.1 × 1.6 in"]],
@@ -145,7 +145,7 @@ window.PRODUCTS = [
   {
     id: "p-014", sku: "FRAM-CF10285", oem: null, brand: "FRAM", grade: "oem",
     title: "FRAM Fresh Breeze Cabin Air Filter with Arm & Hammer", category: "filters", sub: "Cabin Filters",
-    art: "airfilter", position: "na", price: 21.49, unit: "Each",
+    art: "airfilter", position: "na", price: 5999, unit: "Each",
     rating: 4.5, reviews: 1290, stock: 96, shipsToday: true,
     fits: ["toyota-camry-25", "toyota-camry-35", "honda-civic-15t", "honda-civic-20"],
     specs: [["Media", "Baking-soda activated"], ["Change interval", "12,000 mi"], ["Install", "Behind glovebox, no tools"]],
@@ -154,7 +154,7 @@ window.PRODUCTS = [
   {
     id: "p-015", sku: "MOB-124316", oem: null, brand: "Mobil 1", grade: "oem",
     title: "Mobil 1 Extended Performance 0W-20 Full Synthetic (5 qt)", category: "filters", sub: "Fluids",
-    art: "fluid", position: "na", price: 36.97, unit: "5 qt jug",
+    art: "fluid", position: "na", price: 10399, unit: "5 qt jug",
     rating: 4.9, reviews: 2210, stock: 500, shipsToday: true,
     fits: ["universal"],
     specs: [["Viscosity", "0W-20"], ["Approvals", "API SP, ILSAC GF-6A"], ["Volume", "4.73 L"]],
@@ -163,7 +163,7 @@ window.PRODUCTS = [
   {
     id: "p-016", sku: "CSF-7090", oem: "16400-F0010", brand: "CSF", grade: "performance",
     title: "CSF High-Performance All-Aluminium Radiator", category: "cooling", sub: "Radiators",
-    art: "radiator", position: "na", price: 399.00, unit: "Each",
+    art: "radiator", position: "na", price: 111699, unit: "Each",
     rating: 4.7, reviews: 63, stock: 4,
     fits: ["toyota-camry-25", "toyota-camry-35"],
     specs: [["Core", "2-row, 40 mm"], ["Construction", "TIG-welded aluminium"], ["Fitment", "Direct, reuses OE fans"]],
@@ -172,7 +172,7 @@ window.PRODUCTS = [
   {
     id: "p-017", sku: "AIS-WPT-190", oem: "16100-09471", brand: "Aisin", grade: "oem",
     title: "Aisin Engine Water Pump with Gasket", category: "cooling", sub: "Water Pumps",
-    art: "pump", position: "na", price: 112.40, unit: "Each",
+    art: "pump", position: "na", price: 31499, unit: "Each",
     rating: 4.8, reviews: 140, stock: 13, shipsToday: true,
     fits: ["toyota-camry-25", "honda-civic-20"],
     specs: [["Impeller", "Cast iron"], ["Includes", "Gasket"], ["Supplier", "OE supplier"]],
@@ -181,7 +181,7 @@ window.PRODUCTS = [
   {
     id: "p-018", sku: "MIS-TH-180", oem: null, brand: "Mishimoto", grade: "performance",
     title: "Mishimoto Racing Thermostat 160 °F", category: "cooling", sub: "Thermostats",
-    art: "thermostat", position: "na", price: 44.95, unit: "Each",
+    art: "thermostat", position: "na", price: 12599, unit: "Each",
     rating: 4.4, reviews: 58, stock: 0,
     fits: ["vw-golf-gti", "honda-civic-15t"],
     specs: [["Opening temp", "160 °F / 71 °C"], ["Seal", "Viton gasket"]],
@@ -190,17 +190,17 @@ window.PRODUCTS = [
   {
     id: "p-019", sku: "ODY-94R-850", oem: null, brand: "Odyssey", grade: "performance",
     title: "Odyssey Performance AGM Battery Group 94R", category: "electrical", sub: "Batteries",
-    art: "battery", position: "na", price: 249.99, unit: "Each + $22 core",
-    rating: 4.8, reviews: 377, stock: 9, core: 22,
+    art: "battery", position: "na", price: 69999, unit: "Each + Rs 6,200 core",
+    rating: 4.8, reviews: 377, stock: 9, core: 6200,
     fits: ["bmw-g20-m340i", "bmw-g20-330i", "vw-golf-gti", "ford-f150-35"],
     specs: [["Group", "94R / H7"], ["CCA", "850 A"], ["Reserve capacity", "140 min"], ["Chemistry", "AGM"]],
-    desc: "Requires battery registration on BMW models after install. A refundable $22 core charge applies until the old battery is returned."
+    desc: "Requires battery registration on BMW models after install. A refundable Rs 6,200 core charge applies until the old battery is returned."
   },
   {
     id: "p-020", sku: "DEN-210-0812", oem: "BL3T-10300-AA", brand: "Denso", grade: "oem",
     title: "Denso Remanufactured Alternator 200 A", category: "electrical", sub: "Alternators",
-    art: "alternator", position: "na", price: 286.00, unit: "Each + $45 core",
-    rating: 4.6, reviews: 92, stock: 5, core: 45,
+    art: "alternator", position: "na", price: 80099, unit: "Each + Rs 12,600 core",
+    rating: 4.6, reviews: 92, stock: 5, core: 12600,
     fits: ["ford-f150-35", "ford-f150-50"],
     specs: [["Output", "200 A"], ["Voltage", "12 V"], ["Pulley", "6-groove clutch"], ["Condition", "Remanufactured, tested"]],
     desc: "Fully remanufactured to OE spec and load-tested before shipping."
@@ -208,7 +208,7 @@ window.PRODUCTS = [
   {
     id: "p-021", sku: "BOS-15734", oem: null, brand: "Bosch", grade: "oem",
     title: "Bosch Premium Oxygen Sensor (Upstream)", category: "electrical", sub: "Sensors",
-    art: "sensor", position: "na", price: 79.95, unit: "Each",
+    art: "sensor", position: "na", price: 22399, unit: "Each",
     rating: 4.7, reviews: 211, stock: 22, shipsToday: true,
     fits: ["toyota-camry-25", "honda-civic-20", "honda-civic-15t"],
     specs: [["Type", "Air/fuel ratio, wideband"], ["Wires", "4"], ["Thread", "M18 × 1.5"]],
@@ -217,7 +217,7 @@ window.PRODUCTS = [
   {
     id: "p-022", sku: "BORLA-140735", oem: null, brand: "Borla", grade: "performance",
     title: "Borla S-Type Cat-Back Exhaust System", category: "exhaust", sub: "Cat-Back",
-    art: "exhaust", position: "na", price: 1489.00, was: 1599.00, unit: "Complete system",
+    art: "exhaust", position: "na", price: 416899, was: 447699, unit: "Complete system",
     rating: 4.9, reviews: 37, stock: 2,
     fits: ["ford-f150-50"],
     specs: [["Tubing", "3.0 in T-304 stainless"], ["Tips", "4.0 in polished"], ["Sound", "Moderate, no drone at cruise"]],
@@ -226,7 +226,7 @@ window.PRODUCTS = [
   {
     id: "p-023", sku: "WAL-50-0141", oem: null, brand: "Walker", grade: "oem",
     title: "Walker Exhaust Gasket & Hardware Kit", category: "exhaust", sub: "Gaskets & Hardware",
-    art: "gasket", position: "na", price: 12.99, unit: "Kit",
+    art: "gasket", position: "na", price: 3599, unit: "Kit",
     rating: 4.3, reviews: 88, stock: 64, shipsToday: true,
     fits: ["universal"],
     specs: [["Includes", "2 donut gaskets, 4 spring bolts"], ["Flange", "2.25 – 2.5 in"]],
@@ -235,7 +235,7 @@ window.PRODUCTS = [
   {
     id: "p-024", sku: "WAG-QC1234", oem: null, brand: "Wagner", grade: "oem",
     title: "Wagner QuickStop Semi-Metallic Rear Brake Pads", category: "brakes", sub: "Pads",
-    art: "pads", position: "rear", price: 34.99, unit: "Rear axle",
+    art: "pads", position: "rear", price: 9799, unit: "Rear axle",
     rating: 4.4, reviews: 156, stock: 37, shipsToday: true,
     fits: ["ford-f150-35", "ford-f150-50", "toyota-camry-25", "toyota-camry-35", "honda-civic-15t", "honda-civic-20"],
     specs: [["Compound", "Semi-metallic"], ["Hardware", "Abutment clips included"], ["Use", "Daily / towing"]],
