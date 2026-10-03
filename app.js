@@ -81,7 +81,7 @@
       } else {
         s += `<circle cx="100" cy="94" r="55" stroke-width=".8" opacity=".35"/><circle cx="100" cy="94" r="64" stroke-width=".8" opacity=".35"/>`;
       }
-      return s + dimH(22, 178, 190, drilled ? 'Ø 374' : 'Ø 345');
+      return s + dimH(22, 178, 190, drilled ? 'Ø 300' : 'Ø 270');
     },
     'rotor-plain'() { return ART.rotor(false); },
     pads() {
@@ -201,7 +201,7 @@
     if (s === 'fit') return `<p class="fitline fit spec-sm">${icon('check', 'icon-sm')}Fits your ${esc(vShort(v))}</p>`;
     if (s === 'nofit') return `<p class="fitline nofit spec-sm">${icon('x', 'icon-sm')}Doesn't fit your ${esc(vShort(v))}</p>`;
     if (s === 'universal') return `<p class="fitline universal spec-sm">${icon('info', 'icon-sm')}Universal fitment — check specs</p>`;
-    return `<p class="fitline unknown spec-sm">${icon('car', 'icon-sm')}Add your vehicle to confirm fit</p>`;
+    return `<button type="button" class="fitline unknown spec-sm" data-act="garage">${icon('car', 'icon-sm')}Add your vehicle to confirm fit</button>`;
   }
   const savePct = (p) => Math.round((1 - p.price / p.was) * 100);
 
@@ -432,7 +432,7 @@
     else crumbs.push([null, 'All parts']);
     setCrumbs(crumbs, v && f.fitMode === 'mine'
       ? `<span class="notice notice-fit spec-sm">${icon('shield', 'icon-sm')}Showing parts verified for your ${esc(vShort(v))}</span>`
-      : !v ? `<span class="notice notice-warn spec-sm">${icon('info', 'icon-sm')}Add your vehicle to filter by exact fit</span>` : '');
+      : !v ? `<button type="button" class="notice notice-warn spec-sm" data-act="garage">${icon('car', 'icon-sm')}Add your vehicle to filter by exact fit</button>` : '');
     announce(`${total} parts found`);
   }
 
@@ -817,43 +817,60 @@
       });
       return;
     }
+    preserveFocus(() => {
+      dock.innerHTML = `<div class="wrap">
+        <div class="dock-head"><div class="dock-shield">${icon('shield', 'icon-lg')}</div>
+          <div><h2>Find parts guaranteed to fit your exact vehicle</h2><p class="dock-sub spec-sm">Year → make → model → engine. We hide parts that won't bolt on.</p></div></div>
+        <form class="dock-form" id="dock-form" data-vehicle-form="dk" aria-label="Select your vehicle">
+          ${vehicleSelectsHTML('dk')}
+          <button class="btn btn-primary" type="submit" data-key="dk:go">${icon('search')}Find my parts</button>
+          ${v ? `<button class="btn btn-ghost-dark" type="button" data-act="dock-cancel">Cancel</button>` : ''}
+        </form></div>`;
+    });
+  }
+  // Year → make → model → engine selects, shared by the dock (prefix "dk") and the garage dialog ("gd").
+  function vehicleSelectsHTML(prefix) {
     const d = state.draft;
     const inYear = (x) => d.year && x.years[0] <= +d.year && +d.year <= x.years[1];
     const makes = [...new Set(VEHICLES.filter(inYear).map((x) => x.make))].sort();
     const models = [...new Set(VEHICLES.filter((x) => inYear(x) && x.make === d.make).map((x) => x.model))].sort();
     const engines = VEHICLES.filter((x) => inYear(x) && x.make === d.make && x.model === d.model);
-    const sel = (name, label, opts, value, disabled) => `<div class="dock-select"><label class="label-caps" for="dk-${name}">${label}</label>
-      <select id="dk-${name}" data-dock="${name}" data-key="dock:${name}"${disabled ? ' disabled' : ''}><option value="">${label}</option>${opts.map(([val, l]) => `<option value="${esc(val)}"${String(val) === String(value) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>${icon('chevron', 'icon-sm')}</div>`;
+    const sel = (name, label, opts, value, disabled) => `<div class="dock-select"><label class="label-caps" for="${prefix}-${name}">${label}</label>
+      <select id="${prefix}-${name}" data-dock="${name}" data-prefix="${prefix}" data-key="${prefix}:${name}"${disabled ? ' disabled' : ''}><option value="">${disabled ? `Select ${label === 'Make' ? 'year' : label === 'Model' ? 'make' : 'model'} first` : label}</option>${opts.map(([val, l]) => `<option value="${esc(val)}"${String(val) === String(value) ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>${icon('chevron', 'icon-sm')}</div>`;
+    return sel('year', 'Year', YEARS.map((y) => [y, y]), d.year, false)
+      + sel('make', 'Make', makes.map((m) => [m, m]), d.make, !d.year)
+      + sel('model', 'Model', models.map((m) => [m, m]), d.model, !d.make)
+      + sel('engine', 'Engine', engines.map((x) => [x.id, x.engine]), d.id, !d.model);
+  }
+  function renderGarageDialog() {
+    const v = vehicle();
     preserveFocus(() => {
-      dock.innerHTML = `<div class="wrap">
-        <div class="dock-head"><div class="dock-shield">${icon('shield', 'icon-lg')}</div>
-          <div><h2>Find parts guaranteed to fit your exact vehicle</h2><p class="dock-sub spec-sm">Year → make → model → engine. We hide parts that won't bolt on.</p></div></div>
-        <form class="dock-form" id="dock-form" aria-label="Select your vehicle">
-          ${sel('year', 'Year', YEARS.map((y) => [y, y]), d.year, false)}
-          ${sel('make', 'Make', makes.map((m) => [m, m]), d.make, !d.year)}
-          ${sel('model', 'Model', models.map((m) => [m, m]), d.model, !d.make)}
-          ${sel('engine', 'Engine', engines.map((x) => [x.id, x.engine]), d.id, !d.model)}
-          <button class="btn btn-primary" type="submit" data-key="dock:go">${icon('search')}Find my parts</button>
-          ${v ? `<button class="btn btn-ghost-dark" type="button" data-act="dock-cancel">Cancel</button>` : ''}
-        </form></div>`;
+      $('#garage-dialog').innerHTML = `<div class="drawer-head"><h2 id="garage-title">${v ? 'Change your vehicle' : 'Add your vehicle'}</h2>
+          <button class="icon-btn" type="button" data-act="garage-close" aria-label="Close">${icon('x')}</button></div>
+        <form class="garage-form" id="garage-form" data-vehicle-form="gd">
+          ${v ? `<p class="notice notice-fit spec-sm">${icon('shield', 'icon-sm')}Current: ${esc(vFull(v))} · ${esc(v.engine)}</p>` : `<p class="muted">Pick your car and we'll only show parts that fit it.</p>`}
+          <div class="garage-fields">${vehicleSelectsHTML('gd')}</div>
+          <div class="garage-actions">
+            <button class="btn btn-primary btn-lg" type="submit" data-key="gd:go">${icon('search')}Find my parts</button>
+            ${v ? `<button class="btn btn-outline btn-lg" type="button" data-act="dock-clear">Remove vehicle</button>` : ''}
+          </div>
+        </form>`;
     });
   }
   function focusGarage() {
-    if (state.route !== 'catalog' && state.route !== 'pdp') { location.hash = '#/shop'; setTimeout(focusGarage, 60); return; }
     closeDrawers(false);
-    if (state.vehicle && !state.dockEditing) {
-      const v = vehicle();
-      state.dockEditing = true;
-      state.draft = { year: String(v.year), make: v.make, model: v.model, id: v.id };
-      renderDock();
-    }
-    $('#dock').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    const first = $('#dk-year'); if (first) first.focus({ preventScroll: true });
+    const v = vehicle();
+    state.draft = v ? { year: String(v.year), make: v.make, model: v.model, id: v.id } : { year: '', make: '', model: '', id: '' };
+    renderGarageDialog();
+    const dlg = $('#garage-dialog');
+    if (!dlg.open) dlg.showModal();
+    $('#gd-year').focus();
   }
   function rerender() {
     const { parts } = parseHash();
     if (state.route === 'catalog') renderCatalog();
     else if (state.route === 'pdp') renderPDP(parts[1]);
+    else if (state.route === 'checkout' && state.cart.length) renderSummary();
     renderNav(); renderDock(); renderCart();
   }
 
@@ -993,11 +1010,21 @@
       case 'quick': { const s = t.dataset.sub; if (f.subs.has(s) && f.subs.size === 1) f.subs.clear(); else { f.subs.clear(); f.subs.add(s); } f.page = 1; renderCatalog(); break; }
       case 'page': { const n = +t.dataset.page; if (n >= 1) { f.page = n; renderCatalog(); $('#results-title').scrollIntoView({ behavior: 'smooth', block: 'center' }); } break; }
       case 'view': state.view = t.dataset.view; store.set('apex.view', state.view); renderCatalog(); break;
-      case 'dock-edit': focusGarage(); break;
+      case 'dock-edit': {
+        const v = vehicle();
+        state.dockEditing = true;
+        state.draft = { year: String(v.year), make: v.make, model: v.model, id: v.id };
+        renderDock();
+        $('#dk-year').focus();
+        break;
+      }
+      case 'garage-close': $('#garage-dialog').close(); break;
       case 'dock-cancel': state.dockEditing = false; renderDock(); break;
       case 'dock-clear': {
         const prev = state.vehicle;
         state.vehicle = null; store.set('apex.vehicle', null); state.draft = { year: '', make: '', model: '', id: '' };
+        state.dockEditing = false;
+        if ($('#garage-dialog').open) $('#garage-dialog').close();
         rerender();
         toast('Vehicle removed — showing all parts', { label: 'Undo', fn: () => { state.vehicle = prev; store.set('apex.vehicle', prev); rerender(); } });
         break;
@@ -1024,11 +1051,12 @@
         if (eng.length === 1) d.id = eng[0].id;
       }
       if (k === 'engine') d.id = t.value;
-      renderDock();
+      const pre = t.dataset.prefix;
+      if (pre === 'gd') renderGarageDialog(); else renderDock();
       const next = { year: 'make', make: 'model', model: 'engine' }[k];
-      const nextEl = next && $(`#dk-${next}`);
+      const nextEl = next && $(`#${pre}-${next}`);
       if (t.value && nextEl && !nextEl.value) nextEl.focus();
-      else if (t.value && (k === 'engine' || (k === 'model' && d.id))) $('[data-key="dock:go"]').focus();
+      else if (t.value && (k === 'engine' || (k === 'model' && d.id))) $(`[data-key="${pre}:go"]`).focus();
       return;
     }
     if (t.dataset.line) { setLineQty(t.dataset.line, parseInt(t.value, 10)); return; }
@@ -1088,22 +1116,23 @@
       const base = cat ? `#/c/${cat}` : '#/shop';
       const next = q ? `${base}?q=${encodeURIComponent(q)}` : base;
       if (location.hash === next) { state.catalogKey = null; route(); } else location.hash = next;
-    } else if (form.id === 'dock-form') {
+    } else if (form.dataset.vehicleForm) {
       e.preventDefault();
-      const d = state.draft;
+      const d = state.draft, pre = form.dataset.vehicleForm;
       if (!d.id) {
         const missing = !d.year ? 'year' : !d.make ? 'make' : !d.model ? 'model' : 'engine';
         toast(`Pick the ${missing} to finish setting your vehicle`);
-        $(`#dk-${missing}`).focus();
+        $(`#${pre}-${missing}`).focus();
         return;
       }
       state.vehicle = { id: d.id, year: +d.year };
       store.set('apex.vehicle', state.vehicle);
       state.dockEditing = false;
       state.f.fitMode = 'mine'; state.f.page = 1;
+      if ($('#garage-dialog').open) $('#garage-dialog').close();
       rerender();
       toast(`Garage set: ${vFull(vehicle())} — showing parts that fit`);
-      const focusTarget = $('[data-key="dock:edit"]'); if (focusTarget) focusTarget.focus({ preventScroll: true });
+      if (pre === 'dk') { const focusTarget = $('[data-key="dock:edit"]'); if (focusTarget) focusTarget.focus({ preventScroll: true }); }
     } else if (form.id === 'co-form') { e.preventDefault(); submitCheckout(form); }
   });
 
@@ -1119,7 +1148,7 @@
     }
     if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) && !open) { e.preventDefault(); $('#search-q').focus(); }
   });
-  $('#compare-dialog').addEventListener('click', (e) => { if (e.target.id === 'compare-dialog') e.target.close(); });
+  ['#compare-dialog', '#garage-dialog'].forEach((sel) => $(sel).addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); }));
 
   // ---------- boot ----------
   $('#search-cat').innerHTML = `<option value="">All categories</option>` + CATEGORIES.map((c) => `<option value="${c.id}">${esc(c.name)}</option>`).join('');

@@ -520,6 +520,23 @@ fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 .fit-txt.fit { color: var(--fit-ink); font-weight: 600; }
 .fit-txt.nofit { color: var(--nofit-ink); font-weight: 600; }
 
+/* ---------- Garage dialog ---------- */
+.garage-dialog { width: min(520px, calc(100vw - 32px)); padding: 0; border: 1px solid var(--slate-300); border-radius: var(--r-lg); box-shadow: var(--e3); color: var(--slate-950); }
+.garage-dialog::backdrop { background: rgba(15,23,42,.55); }
+.garage-form { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+.garage-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 12px; padding-top: 6px; }
+.garage-dialog .dock-select select { width: 100%; height: 44px; background: var(--surface); color: var(--slate-950); border-color: var(--slate-300); }
+.garage-dialog .dock-select select:hover:not(:disabled) { border-color: var(--orange); }
+.garage-dialog .dock-select select:disabled { background: var(--slate-100); opacity: 1; color: var(--slate-500); }
+.garage-dialog .dock-select label { background: var(--surface); color: var(--slate-600); }
+.garage-dialog .dock-select .icon { color: var(--slate-500); top: 13px; }
+.garage-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.garage-actions .btn-primary { flex: 1; }
+button.fitline, button.notice { font: inherit; text-align: left; cursor: pointer; width: 100%; position: relative; z-index: 1; }
+button.notice { width: auto; }
+button.fitline.unknown:hover, button.notice-warn:hover { border-color: var(--universal); text-decoration: underline; }
+@media (max-width: 480px) { .garage-fields { grid-template-columns: 1fr; } }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1279px) {
   :root { --gutter: 16px; --margin: 24px; }
