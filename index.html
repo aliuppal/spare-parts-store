@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ApexAuto Parts — Spare parts guaranteed to fit</title>
+  <meta name="description" content="Brake, suspension, engine, cooling and electrical spare parts matched to your exact vehicle." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chivo:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Utility strip -->
+  <div class="strip">
+    <div class="wrap">
+      <p class="strip-msg">
+        <span class="strip-tag label-caps">Fitment pledge</span>
+        <span>Guaranteed exact fit or your money back</span>
+        <span class="hide-md" aria-hidden="true">•</span>
+        <span class="hide-md">Free standard shipping over $75</span>
+      </p>
+      <nav class="strip-links spec-sm" aria-label="Utility">
+        <a href="#/orders"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-truck"/></svg>Track order</a>
+        <a href="#/deals" class="hl"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-tag"/></svg>Clearance deals</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="wrap header-main">
+      <a class="logo" href="#/" aria-label="ApexAuto home">
+        <span class="logo-mark"><svg class="icon icon-lg" aria-hidden="true" style="fill:currentColor;stroke:none"><use href="#i-bolt"/></svg></span>
+        <span>Apex<b>Auto</b></span>
+      </a>
+
+      <form class="search" id="search-form" role="search">
+        <label class="sr-only" for="search-cat">Category</label>
+        <select id="search-cat"></select>
+        <div class="search-input">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <label class="sr-only" for="search-q">Search parts</label>
+          <input id="search-q" type="search" autocomplete="off" placeholder="Part name, brand, SKU or OEM number" />
+        </div>
+        <button class="btn btn-primary" type="submit">Search</button>
+      </form>
+
+      <div class="header-actions">
+        <button class="garage-chip" id="garage-chip" type="button" data-act="garage"></button>
+        <button class="cart-btn" id="cart-btn" type="button" data-act="open-cart" aria-haspopup="dialog" aria-controls="cart-drawer"></button>
+      </div>
+    </div>
+    <nav class="cat-nav" aria-label="Categories">
+      <div class="wrap"><ul id="cat-nav"></ul></div>
+    </nav>
+  </header>
+
+  <!-- Fitment dock -->
+  <section class="dock" id="dock" aria-label="Your vehicle"></section>
+
+  <!-- Breadcrumbs -->
+  <div class="crumbs-bar" id="crumbs-bar" hidden><div class="wrap" id="crumbs"></div></div>
+
+  <main id="main" tabindex="-1">
+    <!-- Loading state: replaced once app.js renders -->
+    <div class="wrap page" aria-busy="true">
+      <p class="sr-only">Loading catalog…</p>
+      <div class="catalog">
+        <div class="filters-col"><div class="skel" style="height:420px"></div></div>
+        <div class="grid">
+          <div class="skel" style="height:520px"></div><div class="skel" style="height:520px"></div><div class="skel" style="height:520px"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Trust + tech support -->
+  <section class="trust" aria-label="Why ApexAuto">
+    <div class="wrap">
+      <div class="tech-card">
+        <div class="tc-left">
+          <div class="tc-icon"><svg class="icon icon-lg" aria-hidden="true"><use href="#i-wrench"/></svg></div>
+          <div>
+            <p class="label-caps eyebrow">Mechanical certainty</p>
+            <h2>Not sure which part fits your chassis?</h2>
+            <p>Send us your 17-digit VIN and a technician checks bolt pattern, rotor size and sensor type before your order ships.</p>
+          </div>
+        </div>
+        <div class="tc-actions">
+          <a class="btn btn-primary btn-lg" href="mailto:fitment@example.com?subject=Fitment%20check"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg>Ask a technician</a>
+          <button class="btn btn-ghost-dark btn-lg" type="button" data-act="garage"><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg>Set my vehicle</button>
+        </div>
+      </div>
+      <div class="pillars">
+        <div class="panel pillar"><div class="p-ico fit"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></div><div><h3>Fitment guarantee</h3><p>If a part listed for your vehicle doesn't bolt on, return shipping is on us.</p></div></div>
+        <div class="panel pillar"><div class="p-ico"><svg class="icon" aria-hidden="true"><use href="#i-return"/></svg></div><div><h3>60-day returns</h3><p>No restocking fee on unopened, uninstalled parts.</p></div></div>
+        <div class="panel pillar"><div class="p-ico"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg></div><div><h3>Manufacturer warranties</h3><p>Every part carries its maker's warranty, honoured through us.</p></div></div>
+        <div class="panel pillar"><div class="p-ico"><svg class="icon" aria-hidden="true"><use href="#i-truck"/></svg></div><div><h3>Ships today</h3><p>Order parts marked "Ships today" before 3 pm.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand"><span class="logo-mark" style="width:28px;height:28px"><svg class="icon" aria-hidden="true" style="fill:currentColor;stroke:none"><use href="#i-bolt"/></svg></span>ApexAuto Parts Co.</div>
+          <p style="max-width:340px">Replacement and performance parts for European, domestic and Japanese vehicles, matched to your exact year, make, model and engine.</p>
+          <p class="spec-sm" style="margin-top:12px;color:#FED7AA">Demo storefront — sample catalog, no real orders or payments.</p>
+        </div>
+        <div><h3 class="label-caps">Shop</h3><ul id="footer-cats"></ul></div>
+        <div><h3 class="label-caps">Fitment</h3><ul><li><a href="#/shop" data-act="garage">Set my vehicle</a></li><li><a href="#/deals">Clearance deals</a></li><li><a href="#/orders">Order history</a></li></ul></div>
+        <div><h3 class="label-caps">Support</h3><ul><li><a href="mailto:support@example.com">Contact support</a></li><li><a href="mailto:support@example.com?subject=Returns">Returns &amp; cores</a></li><li><a href="mailto:fitment@example.com">Fitment questions</a></li></ul></div>
+      </div>
+      <div class="footer-bottom spec-sm">
+        <span>© <span id="year"></span> ApexAuto Parts Co.</span>
+        <span>Prices in USD. Core charges are refunded when the old part is returned.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Overlays -->
+  <div class="scrim" id="scrim" data-act="close-drawers"></div>
+
+  <aside class="drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+    <div class="drawer-head">
+      <h2 id="cart-title">Your cart</h2>
+      <button class="icon-btn" type="button" data-act="close-drawers" aria-label="Close cart"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="drawer-body" id="cart-body"></div>
+    <div class="drawer-foot" id="cart-foot"></div>
+  </aside>
+
+  <aside class="drawer left" id="filter-drawer" role="dialog" aria-modal="true" aria-labelledby="filter-title">
+    <div class="drawer-head">
+      <h2 id="filter-title">Filters</h2>
+      <button class="icon-btn" type="button" data-act="close-drawers" aria-label="Close filters"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="drawer-body"></div>
+    <div class="drawer-foot"><button class="btn btn-secondary btn-lg btn-block" type="button" data-act="close-drawers">Show <span id="filter-drawer-count">0</span> parts</button></div>
+  </aside>
+
+  <div class="compare-bar" id="compare-bar" hidden></div>
+  <dialog class="compare-dialog" id="compare-dialog" aria-labelledby="compare-title"></dialog>
+
+  <div class="toast-region" id="toasts" aria-live="polite"></div>
+  <p class="sr-only" id="sr-status" aria-live="polite"></p>
+
+  <!-- Icon sprite (1.75px monoline, currentColor) -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></symbol>
+      <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.3a1 1 0 0 0 1-.8L20.5 8H6.2"/><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/></symbol>
+      <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 16V12l2-5h10l2 5v4M3 12h18M5 16h14M6 16v3M18 16v3"/><circle cx="7.5" cy="13.8" r=".6"/><circle cx="16.5" cy="13.8" r=".6"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+      <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+      <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+      <symbol id="i-tune" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><rect x="4" y="5" width="2" height="2"/><rect x="4" y="11" width="2" height="2"/><rect x="4" y="17" width="2" height="2"/></symbol>
+      <symbol id="i-compare" viewBox="0 0 24 24"><path d="M7 20V4M4 7l3-3 3 3M17 4v16M14 17l3 3 3-3"/></symbol>
+      <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></symbol>
+      <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.2v.1"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.1"/></symbol>
+      <symbol id="i-return" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+      <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 21l5-3 5 3-1.5-7"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+      <symbol id="i-package" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4v10l-9 4-9-4zM3 7l9 4 9-4M12 11v10"/></symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V3h9l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.3"/></symbol>
+      <symbol id="i-barcode" viewBox="0 0 24 24"><path d="M4 5v14M7 5v14M10 5v14M14 5v14M17 5v14M20 5v14"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    </defs>
+  </svg>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
