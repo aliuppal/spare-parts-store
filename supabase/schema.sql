@@ -8,7 +8,7 @@
 create table if not exists public.admin_users (
   email text primary key
 );
-insert into public.admin_users (email) values ('aliuppal@gmail.com') on conflict do nothing;
+insert into public.admin_users (email) values ('aliuppal@gmail.com'), ('teckintl@gmail.com') on conflict do nothing;
 
 -- True when the signed-in user's email is in admin_users. SECURITY DEFINER so it can read
 -- admin_users even though that table is locked down by RLS.
