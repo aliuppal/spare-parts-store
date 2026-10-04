@@ -30,7 +30,13 @@
     for (const r of [p, v, c]) if (r.error) throw r.error;
     // Orders need supabase/orders.sql; if it hasn't been run yet the rest of admin still works.
     const o = await sb().from('orders').select('*').order('created_at', { ascending: false }).limit(500);
-    data = { products: p.data, vehicles: v.data, cats: c.data, orders: o.error ? null : o.data, ordersError: o.error ? o.error.message : null };
+    // Review queue needs supabase/candidates.sql.
+    const q = await sb().from('product_candidates').select('*').eq('status', 'pending').order('found_at', { ascending: false }).limit(100);
+    data = {
+      products: p.data, vehicles: v.data, cats: c.data,
+      orders: o.error ? null : o.data, ordersError: o.error ? o.error.message : null,
+      candidates: q.error ? null : q.data, candidatesError: q.error ? q.error.message : null,
+    };
   }
   // The storefront builds its catalog once at page load, so after a change we reload the page.
   function reloadWith(message, hash = '#/admin') {
@@ -67,8 +73,8 @@
         `<button class="btn btn-outline" type="button" data-acct="signout">Sign out</button><a class="btn btn-primary" href="#/shop">Back to the shop</a>`);
       return;
     }
-    const tab = ['vehicles', 'orders'].includes(route[0]) ? route[0] : 'products';
-    const titles = { products: 'Products', vehicles: 'Vehicles', orders: 'Orders' };
+    const tab = ['vehicles', 'orders', 'review'].includes(route[0]) ? route[0] : 'products';
+    const titles = { products: 'Products', vehicles: 'Vehicles', orders: 'Orders', review: 'Review new products' };
     mount.innerHTML = `<div class="wrap page admin">
       <div class="adm-head">
         <div><p class="label-caps muted">Store admin</p><h1>${titles[tab]}</h1></div>
@@ -76,6 +82,7 @@
       </div>
       <nav class="adm-tabs" aria-label="Admin sections">
         <a href="#/admin/orders"${tab === 'orders' ? ' aria-current="page"' : ''}>Orders <span class="count-pill" id="adm-new-count" hidden></span></a>
+        <a href="#/admin/review"${tab === 'review' ? ' aria-current="page"' : ''}>Review <span class="count-pill" id="adm-review-count" hidden></span></a>
         <a href="#/admin"${tab === 'products' ? ' aria-current="page"' : ''}>Products</a>
         <a href="#/admin/vehicles"${tab === 'vehicles' ? ' aria-current="page"' : ''}>Vehicles</a>
       </nav>
@@ -83,7 +90,7 @@
       <div id="adm-body"><div class="skel" style="height:320px"></div></div>
     </div>`;
     try {
-      if (!data) await load();
+      if (!data || (data.stale && tab !== 'review')) await load();
     } catch (e) {
       $('#adm-body').innerHTML = `<div class="panel state" role="alert"><div class="state-icon">${icon('alert', 'icon-lg')}</div><h2>Couldn't load the catalog</h2><p>${esc(e.message)}</p><div class="actions"><button class="btn btn-primary" type="button" onclick="location.reload()">Retry</button></div></div>`;
       return;
@@ -93,7 +100,11 @@
     if (pill && newCount) { pill.hidden = false; pill.textContent = newCount; pill.setAttribute('aria-label', `${newCount} new`); }
     if (route[0] === 'new') return productForm(null);
     if (route[0] === 'p') return productForm(route[1]);
+    const rc = (data.candidates || []).length;
+    const rpill = $('#adm-review-count');
+    if (rpill && rc) { rpill.hidden = false; rpill.textContent = rc; rpill.setAttribute('aria-label', `${rc} waiting`); }
     if (tab === 'orders') return route[1] ? orderDetail(route[1]) : ordersView();
+    if (tab === 'review') return reviewView();
     if (tab === 'vehicles') return vehiclesView();
     return productList();
   }
@@ -357,6 +368,95 @@
     reloadWith(`Deleted “${p.title}”`);
   }
 
+  // ---------- review queue (new products found by the daily job) ----------
+  function reviewView() {
+    if (!data.candidates) {
+      $('#adm-body').innerHTML = `<div class="panel state"><div class="state-icon">${icon('search', 'icon-lg')}</div>
+        <h2>The review queue isn't set up yet</h2><p>Run <b>supabase/candidates.sql</b> in the Supabase SQL editor, then reload this page.</p>
+        <p class="spec-sm muted">${esc(data.candidatesError || '')}</p></div>`;
+      return;
+    }
+    if (!data.candidates.length) {
+      $('#adm-body').innerHTML = `<div class="panel state"><div class="state-icon">${icon('check', 'icon-lg')}</div>
+        <h2>Nothing waiting for review</h2><p>The daily 7 PM job adds new products here. Approve them to put them in the shop, or reject them so they aren't suggested again.</p></div>`;
+      return;
+    }
+    const vName = (id) => { const v = data.vehicles.find((x) => x.id === id); return v ? `${v.make} ${v.model} · ${v.engine}` : id; };
+    $('#adm-body').innerHTML = `<p class="hint adm-review-intro">${data.candidates.length} new product${data.candidates.length === 1 ? '' : 's'} found. Check the details, adjust anything that's wrong, then approve or reject. Nothing appears in the shop until you approve it.</p>
+      <div class="adm-review">${data.candidates.map((c) => `
+      <article class="panel adm-cand" data-cand="${c.id}">
+        <div class="media adm-cand-photo${c.image_base64 ? ' has-photo' : ''}">${c.image_base64 ? `<img class="photo" src="data:${esc(c.image_mime)};base64,${c.image_base64}" alt="">` : '<p class="muted spec-sm">No photo</p>'}</div>
+        <div class="adm-cand-body">
+          <div class="fields">
+            <div class="field"><label for="cd-title-${c.id}">Title</label><input class="input" id="cd-title-${c.id}" data-k="title" value="${esc(c.title)}"></div>
+            <div class="field half"><label for="cd-brand-${c.id}">Brand</label><input class="input" id="cd-brand-${c.id}" data-k="brand" value="${esc(c.brand || '')}" placeholder="Unbranded"></div>
+            <div class="field half"><label for="cd-part-${c.id}">Part number</label><input class="input" id="cd-part-${c.id}" data-k="part_no" value="${esc(c.part_no || '')}"></div>
+            <div class="field half"><label for="cd-cat-${c.id}">Category</label><select class="input" id="cd-cat-${c.id}" data-k="category"><option value="">Choose…</option>${data.cats.map((x) => `<option value="${esc(x.id)}"${c.category === x.id ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>
+            <div class="field half"><label for="cd-sub-${c.id}">Part type</label><input class="input" id="cd-sub-${c.id}" data-k="sub" value="${esc(c.sub || '')}" placeholder="e.g. Brake pads"></div>
+            <div class="field half"><label for="cd-price-${c.id}">Price (Rs)</label><input class="input mono" id="cd-price-${c.id}" data-k="price" inputmode="numeric" value="${c.price}"></div>
+            <div class="field half"><label for="cd-was-${c.id}">Original price (Rs)</label><input class="input mono" id="cd-was-${c.id}" data-k="was" inputmode="numeric" value="${c.was || ''}"></div>
+          </div>
+          <div class="adm-cand-fits">
+            <p class="label-caps muted">Fits</p>
+            ${c.universal ? '<p class="spec-sm">Universal</p>' : c.fits.length ? `<ul class="chips">${c.fits.map((f) => `<li class="chip spec-sm">${esc(vName(f.vehicle_id))} (${f.year_from}–${f.year_to})</li>`).join('')}</ul>` : '<p class="field-error">No vehicle matched — tag it after approving from Products, or mark universal.</p>'}
+            <label class="adm-check"><input type="checkbox" data-k="universal"${c.universal ? ' checked' : ''}> Universal (fits any vehicle)</label>
+          </div>
+          ${c.notes ? `<p class="spec-sm muted adm-cand-notes">${icon('info', 'icon-sm')}${esc(c.notes)}</p>` : ''}
+          <p class="spec-sm muted">Found ${when(c.found_at)} · <a class="link" href="${esc(c.source_url)}" target="_blank" rel="noopener">Source link</a></p>
+          <p class="field-error adm-cand-err" role="alert" hidden></p>
+          <div class="adm-cand-actions">
+            <button class="btn btn-outline" type="button" data-adm="cand-reject" data-id="${c.id}">${icon('x')}Reject</button>
+            <button class="btn btn-primary" type="button" data-adm="cand-approve" data-id="${c.id}">${icon('check')}Approve &amp; add to shop</button>
+          </div>
+        </div>
+      </article>`).join('')}</div>`;
+  }
+
+  function candidateOverrides(card) {
+    const val = (k) => { const el = card.querySelector(`[data-k="${k}"]`); return el ? el.value.trim() : ''; };
+    const num = (k) => { const s = val(k).replace(/[,\s]/g, ''); return s === '' ? null : Number(s); };
+    return {
+      title: val('title'), brand: val('brand'), part_no: val('part_no'), category: val('category'), sub: val('sub'),
+      price: num('price'), was: num('was'), universal: card.querySelector('[data-k="universal"]').checked,
+    };
+  }
+
+  function removeCandidateCard(id, message) {
+    data.candidates = data.candidates.filter((c) => String(c.id) !== String(id));
+    const pill = $('#adm-review-count');
+    if (pill) { pill.hidden = !data.candidates.length; pill.textContent = data.candidates.length; }
+    reviewView();
+    const intro = $('#adm-body');
+    intro.insertAdjacentHTML('afterbegin', `<p class="notice notice-fit adm-flash" role="status">${icon('check', 'icon-sm')}${esc(message)}</p>`);
+  }
+
+  async function decideCandidate(id, approve, btn) {
+    const card = $(`[data-cand="${id}"]`);
+    const err = card.querySelector('.adm-cand-err');
+    err.hidden = true;
+    const o = candidateOverrides(card);
+    if (approve) {
+      const problem = !o.title ? 'Enter a title' : !o.category ? 'Choose a category' : !o.sub ? 'Enter the part type'
+        : !Number.isInteger(o.price) || o.price <= 0 ? 'Enter the price in whole rupees'
+          : o.was != null && (!Number.isInteger(o.was) || o.was <= o.price) ? 'Original price must be higher than the price' : '';
+      if (problem) { err.hidden = false; err.textContent = problem; return; }
+    }
+    card.querySelectorAll('button').forEach((b) => (b.disabled = true));
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>' + (approve ? 'Adding…' : 'Rejecting…');
+    const r = approve
+      ? await sb().rpc('approve_product_candidate', { p_id: id, p: o })
+      : await sb().from('product_candidates').update({ status: 'rejected', reviewed_at: new Date().toISOString(), image_base64: null }).eq('id', id);
+    if (r.error) {
+      card.querySelectorAll('button').forEach((b) => (b.disabled = false));
+      btn.innerHTML = approve ? `${icon('check')}Approve &amp; add to shop` : `${icon('x')}Reject`;
+      err.hidden = false;
+      err.textContent = `Couldn't ${approve ? 'approve' : 'reject'}: ${r.error.message}`;
+      return;
+    }
+    data.stale = true; // products changed; reload from Supabase on the next tab change
+    removeCandidateCard(id, approve ? `Added “${o.title}” to the shop.` : `Rejected “${o.title}” — it won't be suggested again.`);
+  }
+
   // ---------- orders ----------
   const STATUSES = [
     ['new', 'New'], ['confirmed', 'Confirmed'], ['dispatched', 'Dispatched'], ['delivered', 'Delivered'], ['cancelled', 'Cancelled'],
@@ -542,6 +642,8 @@
     if (act === 'delete') deleteProduct();
     if (act === 'veh-rm') removeVehicle(t.dataset.id);
     if (act === 'order-filter') { orderFilter = t.dataset.f; ordersView(); }
+    if (act === 'cand-approve') decideCandidate(Number(t.dataset.id), true, t);
+    if (act === 'cand-reject') decideCandidate(Number(t.dataset.id), false, t);
   });
   document.addEventListener('change', (e) => {
     if (!mount || !mount.contains(e.target)) return;

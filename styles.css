@@ -707,3 +707,16 @@ button.fitline.unknown:hover, button.notice-warn:hover { border-color: var(--uni
 .adm-order-head .adm-h2 { margin: 0; }
 .adm-contact { margin-top: 4px; }
 @media (max-width: 960px) { .adm-order { grid-template-columns: 1fr; } }
+
+/* ---------- Admin: review queue ---------- */
+.adm-review { display: grid; gap: 16px; }
+.adm-review-intro { margin-bottom: 4px; }
+.adm-cand { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px; padding: 20px; }
+.adm-cand-photo { width: 220px; align-self: start; }
+.adm-cand-photo > p { padding: 12px; text-align: center; }
+.adm-cand-body { display: grid; gap: 14px; min-width: 0; }
+.adm-cand-fits { display: grid; gap: 6px; }
+.adm-cand-fits .chips { margin: 0; }
+.adm-cand-notes { display: flex; gap: 6px; align-items: flex-start; }
+.adm-cand-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+@media (max-width: 767px) { .adm-cand { grid-template-columns: 1fr; } .adm-cand-photo { width: 100%; max-width: 260px; } }
