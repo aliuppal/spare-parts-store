@@ -1,6 +1,6 @@
 -- TeckAuto new-product review queue. Run once in the Supabase SQL editor (safe to re-run).
 --
--- A daily Claude routine finds new spare-part listings for the garage vehicles and submits them
+-- A daily Claude routine finds new spare-part listings (PakWheels Auto Store and Daraz) for the garage vehicles and submits them
 -- here as *pending* candidates. Nothing reaches the shop until an admin approves it on
 -- Admin → Review, which copies the candidate into products / product_fitments / product_images.
 
@@ -17,7 +17,7 @@ on conflict (name) do update set value = excluded.value;
 
 create table if not exists public.product_candidates (
   id           bigint generated always as identity primary key,
-  listing_id   text not null unique,                 -- source listing number, used to skip repeats
+  listing_id   text not null unique,                 -- '12345678' (PakWheels) or 'dz-123456789' (Daraz); skips repeats
   source_url   text not null,
   title        text not null,
   brand        text,
@@ -58,7 +58,7 @@ returns text[] language plpgsql stable security definer set search_path = public
 begin
   if not public.scraper_token_ok(p_token) then raise exception 'Not authorised'; end if;
   return array(
-    select regexp_replace(id, '^(pw|tk)-', '') from public.products where id ~ '^(pw|tk)-\d+$'
+    select regexp_replace(id, '^(pw|tk)-', '') from public.products where id ~ '^(pw|tk)-(dz-)?\d+$'
     union
     select listing_id from public.product_candidates
   );
@@ -75,7 +75,7 @@ declare
   f         jsonb;
 begin
   if not public.scraper_token_ok(p_token) then raise exception 'Not authorised'; end if;
-  if v_listing !~ '^\d{3,12}$' then raise exception 'listing_id must be the numeric listing number'; end if;
+  if v_listing !~ '^(\d{3,12}|dz-\d{3,15})$' then raise exception 'listing_id must be the PakWheels listing number or dz-<Daraz item id>'; end if;
   if coalesce(btrim(p->>'title'), '') = '' then raise exception 'title is required'; end if;
   if coalesce((p->>'price')::int, 0) <= 0 then raise exception 'price must be a positive whole number of rupees'; end if;
   if exists (select 1 from public.products where id in ('pw-' || v_listing, 'tk-' || v_listing)) then return 'in_shop'; end if;
