@@ -1,4 +1,4 @@
-/* ApexAuto catalog — real listings from the PakWheels Auto Store (pakwheels.com/accessories-spare-parts),
+/* TeckAuto catalog — real listings from the PakWheels Auto Store (pakwheels.com/accessories-spare-parts),
    prices in PKR as listed on 2026-10-04. `src` links each product to its source listing; `img` is that listing's main photo (hotlinked, credited).
    `fits` holds vehicle ids, optionally with the listing's model years ("honda-civic-15t@2016-2022"), or "universal".
    Stock is not tracked: every listing is shown as available to order. */

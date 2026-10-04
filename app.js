@@ -1,4 +1,4 @@
-/* ApexAuto storefront — vanilla JS, hash-routed, no build step. */
+/* TeckAuto storefront — vanilla JS, hash-routed, no build step. */
 (() => {
   'use strict';
 
@@ -191,7 +191,10 @@
   };
   // Listing photo when we have one; the blueprint drawing stays underneath as the fallback if it fails to load.
   const mediaCls = (p) => 'media' + (p.img ? ' has-photo' : '');
-  const pic = (p) => (p.img ? `<img class="photo" src="${esc(p.img)}" alt="${esc(p.title)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('no-photo')">` : '') + art(p.art);
+  // Supabase products carry `hasImg`: catalog.js fetches the base64 photo once the placeholder is on screen.
+  const pic = (p) => (p.img
+    ? `<img class="photo" src="${esc(p.img)}" alt="${esc(p.title)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('no-photo')">`
+    : p.hasImg ? `<img class="photo pending" data-pid="${esc(p.id)}" alt="${esc(p.title)}" decoding="async">` : '') + art(p.art);
   const art = (type) => `<svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${(ART[type] || ART.oilfilter)()}</svg>`;
 
   // ---------- small renderers ----------
@@ -517,7 +520,7 @@
       ${related.length ? `<section class="related" aria-labelledby="rel-title"><h2 id="rel-title">More ${esc(catName(p.category).toLowerCase())}</h2><div class="grid">${related.map(cardHTML).join('')}</div></section>` : ''}
     </div>`;
     setCrumbs([['#/', 'Home'], [`#/c/${p.category}`, catName(p.category)], [null, p.title]]);
-    document.title = `${p.title} — ApexAuto Parts`;
+    document.title = `${p.title} — TeckAuto Parts`;
   }
   function setPdpQty(n) {
     const input = $('#pdp-qty'); if (!input) return;
@@ -964,7 +967,7 @@
     const [a, b] = parts;
     closeDrawers(false);
     if ($('#compare-dialog').open) $('#compare-dialog').close();
-    document.title = 'ApexAuto Parts — Spare parts guaranteed to fit';
+    document.title = 'TeckAuto Parts — Spare parts guaranteed to fit';
     if (!a || a === 'shop' || a === 'c' || a === 'deals') {
       const cat = a === 'c' ? b : null;
       if (a === 'c' && !CATEGORIES.some((c) => c.id === cat)) { state.route = 'other'; renderNotFound('Category not found'); }
@@ -974,7 +977,7 @@
         const key = `${a || 'shop'}|${cat}|${q}`;
         if (key !== state.catalogKey) { state.f = defaultFilters(); state.f.cat = cat; state.f.q = q; state.f.sale = a === 'deals'; state.catalogKey = key; }
         renderCatalog();
-        if (cat) document.title = `${catName(cat)} — ApexAuto Parts`;
+        if (cat) document.title = `${catName(cat)} — TeckAuto Parts`;
       }
       $('#search-q').value = state.f.q || '';
       $('#search-cat').value = state.f.cat || '';
@@ -985,6 +988,11 @@
       else if (a === 'checkout') { state.route = 'checkout'; renderCheckout(); }
       else if (a === 'order') { state.route = 'order'; renderOrder(b); }
       else if (a === 'orders') { state.route = 'orders'; renderOrders(); }
+      else if (a === 'admin' && window.ApexAdmin) {
+        state.route = 'admin';
+        setCrumbs([['#/', 'Home'], [null, 'Admin']]);
+        window.ApexAdmin.render(main, parts.slice(1));
+      }
       else { state.route = 'other'; renderNotFound(); }
     }
     renderNav(); renderDock(); renderCompareBar();
