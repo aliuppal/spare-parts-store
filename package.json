@@ -1,0 +1,8 @@
+{
+  "name": "teckauto-store",
+  "private": true,
+  "description": "TeckAuto spare-parts storefront (static site + Vercel functions in api/)",
+  "dependencies": {
+    "nodemailer": "^6.9.14"
+  }
+}

@@ -28,7 +28,9 @@
       sb().from('categories').select('*').order('sort'),
     ]);
     for (const r of [p, v, c]) if (r.error) throw r.error;
-    data = { products: p.data, vehicles: v.data, cats: c.data };
+    // Orders need supabase/orders.sql; if it hasn't been run yet the rest of admin still works.
+    const o = await sb().from('orders').select('*').order('created_at', { ascending: false }).limit(500);
+    data = { products: p.data, vehicles: v.data, cats: c.data, orders: o.error ? null : o.data, ordersError: o.error ? o.error.message : null };
   }
   // The storefront builds its catalog once at page load, so after a change we reload the page.
   function reloadWith(message, hash = '#/admin') {
@@ -65,13 +67,15 @@
         `<button class="btn btn-outline" type="button" data-acct="signout">Sign out</button><a class="btn btn-primary" href="#/shop">Back to the shop</a>`);
       return;
     }
-    const tab = route[0] === 'vehicles' ? 'vehicles' : route[0] === 'prices' ? 'prices' : 'products';
+    const tab = ['vehicles', 'prices', 'orders'].includes(route[0]) ? route[0] : 'products';
+    const titles = { products: 'Products', vehicles: 'Vehicles', prices: 'PakWheels prices', orders: 'Orders' };
     mount.innerHTML = `<div class="wrap page admin">
       <div class="adm-head">
-        <div><p class="label-caps muted">Store admin</p><h1>${tab === 'vehicles' ? 'Vehicles' : tab === 'prices' ? 'PakWheels prices' : 'Products'}</h1></div>
+        <div><p class="label-caps muted">Store admin</p><h1>${titles[tab]}</h1></div>
         <a class="btn btn-primary" href="#/admin/new">${icon('plus')}Add product</a>
       </div>
       <nav class="adm-tabs" aria-label="Admin sections">
+        <a href="#/admin/orders"${tab === 'orders' ? ' aria-current="page"' : ''}>Orders <span class="count-pill" id="adm-new-count" hidden></span></a>
         <a href="#/admin"${tab === 'products' ? ' aria-current="page"' : ''}>Products</a>
         <a href="#/admin/vehicles"${tab === 'vehicles' ? ' aria-current="page"' : ''}>Vehicles</a>
         <a href="#/admin/prices"${tab === 'prices' ? ' aria-current="page"' : ''}>PakWheels prices</a>
@@ -85,8 +89,12 @@
       $('#adm-body').innerHTML = `<div class="panel state" role="alert"><div class="state-icon">${icon('alert', 'icon-lg')}</div><h2>Couldn't load the catalog</h2><p>${esc(e.message)}</p><div class="actions"><button class="btn btn-primary" type="button" onclick="location.reload()">Retry</button></div></div>`;
       return;
     }
+    const newCount = (data.orders || []).filter((o) => o.status === 'new').length;
+    const pill = $('#adm-new-count');
+    if (pill && newCount) { pill.hidden = false; pill.textContent = newCount; pill.setAttribute('aria-label', `${newCount} new`); }
     if (route[0] === 'new') return productForm(null);
     if (route[0] === 'p') return productForm(route[1]);
+    if (tab === 'orders') return route[1] ? orderDetail(route[1]) : ordersView();
     if (tab === 'vehicles') return vehiclesView();
     if (tab === 'prices') return pricesView();
     return productList();
@@ -406,6 +414,114 @@
     reloadWith(`Deleted “${p.title}”`);
   }
 
+  // ---------- orders ----------
+  const STATUSES = [
+    ['new', 'New'], ['confirmed', 'Confirmed'], ['dispatched', 'Dispatched'], ['delivered', 'Delivered'], ['cancelled', 'Cancelled'],
+  ];
+  const statusLabel = (s) => (STATUSES.find(([k]) => k === s) || [s, s])[1];
+  const statusBadge = (s) => `<span class="status status-${esc(s)} spec-sm">${esc(statusLabel(s))}</span>`;
+  const when = (iso) => new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  let orderFilter = 'open';
+
+  function ordersMissing() {
+    $('#adm-body').innerHTML = `<div class="panel state"><div class="state-icon">${icon('package', 'icon-lg')}</div>
+      <h2>Orders aren't set up yet</h2><p>Run <b>supabase/orders.sql</b> in the Supabase SQL editor, then reload this page.</p>
+      <p class="spec-sm muted">${esc(data.ordersError || '')}</p></div>`;
+  }
+
+  function ordersView() {
+    if (!data.orders) return ordersMissing();
+    const all = data.orders;
+    const count = (k) => all.filter((o) => (k === 'open' ? !['delivered', 'cancelled'].includes(o.status) : k === 'all' || o.status === k)).length;
+    const rows = all.filter((o) => (orderFilter === 'open' ? !['delivered', 'cancelled'].includes(o.status) : orderFilter === 'all' || o.status === orderFilter));
+    const filters = [['open', 'Open'], ...STATUSES, ['all', 'All']];
+    $('#adm-body').innerHTML = `
+      <div class="panel panel-pad adm-toolbar" role="group" aria-label="Filter orders by status">
+        ${filters.map(([k, l]) => `<button type="button" class="adm-filter${orderFilter === k ? ' is-on' : ''}" data-adm="order-filter" data-f="${k}" aria-pressed="${orderFilter === k}">${l} <span class="muted">${count(k)}</span></button>`).join('')}
+      </div>
+      ${rows.length ? `<div class="panel adm-table-wrap"><table class="adm-table">
+        <thead><tr><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">City</th><th scope="col">Items</th><th scope="col">Collect</th><th scope="col">Status</th></tr></thead>
+        <tbody>${rows.map((o) => `<tr>
+          <td><a class="adm-title mono" href="#/admin/orders/${esc(o.id)}">${esc(o.id)}</a><span class="spec-sm muted">${when(o.created_at)}</span></td>
+          <td>${esc(o.customer_name)}<span class="spec-sm muted">${esc(o.phone)}</span></td>
+          <td>${esc(o.city)}</td>
+          <td>${o.items.reduce((s, i) => s + i.qty, 0)}</td>
+          <td class="mono">${money(o.total)}</td>
+          <td>${statusBadge(o.status)}${o.admin_notes ? `<span class="spec-sm muted" title="${esc(o.admin_notes)}">${icon('chat', 'icon-sm')} note</span>` : ''}</td>
+        </tr>`).join('')}</tbody></table></div>`
+        : `<div class="panel state"><div class="state-icon">${icon('package', 'icon-lg')}</div><h2>${all.length ? 'No orders with this status' : 'No orders yet'}</h2><p>${all.length ? 'Pick another status above.' : 'Orders placed at checkout appear here, and are emailed to the admins.'}</p></div>`}`;
+  }
+
+  function orderDetail(id) {
+    if (!data.orders) return ordersMissing();
+    const o = data.orders.find((x) => x.id === id);
+    if (!o) {
+      $('#adm-body').innerHTML = `<div class="panel state"><h2>Order ${esc(id)} not found</h2><div class="actions"><a class="btn btn-primary" href="#/admin/orders">All orders</a></div></div>`;
+      return;
+    }
+    const digits = o.phone.replace(/[^\d+]/g, '');
+    const wa = digits.replace(/^\+/, '').replace(/^0/, '92');
+    $('#adm-body').innerHTML = `<div class="adm-order">
+      <div class="adm-order-main">
+        <section class="panel form-section">
+          <div class="adm-order-head"><h2 class="adm-h2 mono">${esc(o.id)}</h2>${statusBadge(o.status)}</div>
+          <p class="spec-sm muted">Placed ${new Date(o.created_at).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })} · ${o.shipping_method === 'nextday' ? 'Next-day' : 'Standard'} delivery · Cash on delivery · ${o.email_sent ? 'Emailed to admins' : 'Not emailed'}</p>
+        </section>
+        <section class="panel">
+          <div class="section-title"><h2 class="label-caps">Items</h2>${o.vehicle ? `<span class="spec-sm muted">For ${esc(o.vehicle)}</span>` : ''}</div>
+          <table class="spec-table"><tbody>${o.items.map((i) => `<tr><td><a class="adm-title" href="#/p/${esc(i.product_id)}" target="_blank" rel="noopener">${esc(i.title)}</a><span class="spec-sm muted" style="display:block">${esc(i.sku)} · ${money(i.price)} × ${i.qty}</span></td><td class="mono" style="text-align:right">${money(i.line_total)}</td></tr>`).join('')}</tbody></table>
+          <div class="totals" style="padding:12px 16px;border-top:1px solid var(--slate-200)">
+            <div><span>Subtotal</span><span class="mono">${money(o.subtotal)}</span></div>
+            <div><span>Shipping</span><span class="mono">${o.shipping ? money(o.shipping) : 'Free'}</span></div>
+            <div class="grand"><span>Collect on delivery</span><span class="mono">${money(o.total)}</span></div>
+          </div>
+        </section>
+      </div>
+      <div class="adm-order-side">
+        <section class="panel form-section">
+          <h2 class="adm-h2">Customer</h2>
+          <p><b>${esc(o.customer_name)}</b></p>
+          <p class="adm-contact"><a class="link" href="tel:${esc(digits)}">${esc(o.phone)}</a> · <a class="link" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">WhatsApp</a></p>
+          <p class="adm-contact"><a class="link" href="mailto:${esc(o.email)}">${esc(o.email)}</a></p>
+          <p style="margin-top:8px">${esc(o.address)}<br>${esc(o.city)}</p>
+          ${o.customer_notes ? `<p class="notice notice-warn spec-sm" style="margin-top:12px;display:block"><b>Customer note:</b> ${esc(o.customer_notes)}</p>` : ''}
+        </section>
+        <form class="panel form-section" id="order-form" novalidate>
+          <h2 class="adm-h2">Status &amp; notes</h2>
+          <div class="field"><label for="of-status">Status</label>
+            <select class="input" id="of-status" name="status">${STATUSES.map(([k, l]) => `<option value="${k}"${o.status === k ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
+          <div class="field" style="margin-top:12px"><label for="of-notes">Admin notes</label>
+            <textarea class="input adm-textarea" id="of-notes" name="admin_notes" rows="5" maxlength="2000" placeholder="Courier, tracking number, call outcome… only admins see this">${esc(o.admin_notes || '')}</textarea></div>
+          <p class="hint" id="of-status-msg" role="status">${o.updated_at && o.updated_at !== o.created_at ? `Last updated ${when(o.updated_at)}` : ''}</p>
+          <button class="btn btn-primary btn-block" type="submit" id="of-save" style="margin-top:8px">Save</button>
+        </form>
+        <a class="btn btn-outline btn-block" href="#/admin/orders">${icon('back')}All orders</a>
+      </div>
+    </div>`;
+  }
+
+  async function saveOrder(f) {
+    const id = route[1];
+    const o = data.orders.find((x) => x.id === id);
+    const btn = $('#of-save');
+    const msg = $('#of-status-msg');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>Saving…';
+    const patch = { status: f.elements.status.value, admin_notes: f.elements.admin_notes.value.trim() || null };
+    const r = await sb().from('orders').update(patch).eq('id', id).select().single();
+    btn.disabled = false;
+    btn.textContent = 'Save';
+    if (r.error) { msg.className = 'field-error'; msg.textContent = `Couldn't save: ${r.error.message}`; return; }
+    Object.assign(o, r.data);
+    orderDetail(id);
+    const m = $('#of-status-msg');
+    m.className = 'notice notice-fit spec-sm';
+    m.textContent = `Saved — status is now ${statusLabel(o.status)}`;
+    const n = data.orders.filter((x) => x.status === 'new').length;
+    const pill = $('#adm-new-count');
+    if (pill) { pill.hidden = !n; pill.textContent = n; }
+  }
+
   // ---------- vehicles ----------
   function vehiclesView() {
     const counts = {};
@@ -543,6 +659,7 @@
     if (act === 'delete') deleteProduct();
     if (act === 'veh-rm') removeVehicle(t.dataset.id);
     if (act === 'refresh-all') refreshAll();
+    if (act === 'order-filter') { orderFilter = t.dataset.f; ordersView(); }
   });
   document.addEventListener('change', (e) => {
     if (!mount || !mount.contains(e.target)) return;
@@ -556,6 +673,7 @@
   document.addEventListener('submit', (e) => {
     if (e.target.id === 'adm-form') { e.preventDefault(); save(); }
     if (e.target.id === 'veh-form') { e.preventDefault(); addVehicle(e.target); }
+    if (e.target.id === 'order-form') { e.preventDefault(); saveOrder(e.target); }
   });
 
   // Re-draw when sign-in state changes while the admin page is open.

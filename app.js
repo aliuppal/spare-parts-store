@@ -30,7 +30,7 @@
   const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
   const catName = (id) => (CATEGORIES.find((c) => c.id === id) || {}).name || id;
   const PAGE = 9;
-  const FREE_SHIP = 20000, STD_SHIP = 2500, NEXT_DAY = 7000, TAX = 0.0825; // PKR
+  const FREE_SHIP = 20000, STD_SHIP = 2500, NEXT_DAY = 7000; // PKR — keep in sync with place_order() in supabase/orders.sql
   const PRICE_STEP = 1000;
   const PRICE_CEIL = Math.ceil(Math.max(...PRODUCTS.map((p) => p.price)) / 10000) * 10000;
   const YEARS = (() => { const lo = Math.min(...VEHICLES.map((v) => v.years[0])); const hi = Math.max(...VEHICLES.map((v) => v.years[1])); const out = []; for (let y = hi; y >= lo; y--) out.push(y); return out; })();
@@ -508,7 +508,6 @@
             : `<div class="notice notice-warn">${icon('info', 'icon-sm')}Out of stock. Check back soon, or compare similar parts below.</div>`}
             <p class="spec-sm muted" style="display:flex;gap:6px;align-items:center">${icon('truck', 'icon-sm')}Free standard shipping over ${money(FREE_SHIP)} · 60-day returns</p>
           </div>
-          ${sourceLine(p)}
           <p>${esc(p.desc)}</p>
           <div class="panel"><div class="section-title"><h2 class="label-caps">Technical specifications</h2></div>
             <table class="spec-table spec"><tbody>${p.specs.map(([k, val]) => `<tr><th scope="row">${esc(k)}</th><td>${esc(val)}</td></tr>`).join('')}<tr><th scope="row">Part grade</th><td>${GRADE[p.grade]}</td></tr></tbody></table></div>
@@ -551,8 +550,7 @@
     const core = r2(items.reduce((s, x) => s + (x.p.core || 0) * x.qty, 0));
     const count = items.reduce((s, x) => s + x.qty, 0);
     const ship = !items.length ? 0 : method === 'nextday' ? NEXT_DAY : sub >= FREE_SHIP ? 0 : STD_SHIP;
-    const tax = Math.round(sub * TAX);
-    return { items, sub, core, count, ship, tax, total: r2(sub + core + ship + tax) };
+    return { items, sub, core, count, ship, total: r2(sub + core + ship) };
   }
   function lineHTML(x, editable) {
     const p = x.p, s = fitStatus(p), max = Math.min(p.stock, 99);
@@ -598,7 +596,7 @@
       <div class="totals">
         <div><span>Subtotal</span><span class="mono">${money(t.sub)}</span></div>
         ${t.core ? `<div><span>Refundable core charges</span><span class="mono">${money(t.core)}</span></div>` : ''}
-        <div class="muted"><span>Shipping &amp; tax</span><span>At checkout</span></div>
+        <div class="muted"><span>Shipping</span><span>At checkout</span></div>
       </div>
       <a class="btn btn-primary btn-lg btn-block" href="#/checkout">${icon('lock')}Checkout · ${money(r2(t.sub + t.core))}</a>
       <button class="btn btn-outline btn-block" type="button" data-act="close-drawers">Keep shopping</button>`;
@@ -618,39 +616,18 @@
     toast(`Removed ${byId[id].brand} ${byId[id].sub.toLowerCase()}`, { label: 'Undo', fn: () => { state.cart.splice(Math.min(i, state.cart.length), 0, removed); saveCart(); if (state.route === 'checkout') renderCheckout(); } });
   }
 
-  // ---------- checkout ----------
-  function luhn(v) {
-    const d = v.replace(/\D/g, '');
-    if (d.length < 13 || d.length > 19) return false;
-    let sum = 0;
-    for (let i = 0; i < d.length; i++) { let n = +d[d.length - 1 - i]; if (i % 2) { n *= 2; if (n > 9) n -= 9; } sum += n; }
-    return sum % 10 === 0;
-  }
-  function expOk(v) {
-    const m = v.trim().match(/^(\d{2})\s*\/\s*(\d{2})$/); if (!m) return false;
-    const mo = +m[1], yr = 2000 + +m[2]; if (mo < 1 || mo > 12) return false;
-    const now = new Date();
-    return yr > now.getFullYear() || (yr === now.getFullYear() && mo >= now.getMonth() + 1);
-  }
+  // ---------- checkout (cash on delivery) ----------
   const FIELDS = {
+    name: { label: 'Full name', test: (v) => v.trim().length >= 2, msg: 'Enter your full name' },
+    phone: { label: 'Phone', test: (v) => { const d = v.replace(/\D/g, ''); return d.length >= 10 && d.length <= 15; }, msg: 'Enter a mobile number like 0300 1234567 — we call to confirm the order' },
     email: { label: 'Email', test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()), msg: 'Enter an email like name@example.com' },
-    phone: { label: 'Phone', test: (v) => { const d = v.replace(/\D/g, ''); return d.length >= 10 && d.length <= 15; }, msg: 'Enter a 10-digit phone number for delivery updates' },
-    first: { label: 'First name', test: (v) => v.trim().length > 0, msg: 'Enter your first name' },
-    last: { label: 'Last name', test: (v) => v.trim().length > 0, msg: 'Enter your last name' },
-    address: { label: 'Street address', test: (v) => v.trim().length >= 4, msg: 'Enter the street address' },
-    apt: { label: 'Apt, suite (optional)', optional: true, test: () => true },
-    city: { label: 'City', test: (v) => v.trim().length > 1, msg: 'Enter the city' },
-    region: { label: 'State', test: (v) => /^[A-Za-z]{2}$/.test(v.trim()), msg: 'Use the 2-letter state code, e.g. MI' },
-    zip: { label: 'ZIP code', test: (v) => /^\d{5}(-\d{4})?$/.test(v.trim()), msg: 'Enter a 5-digit ZIP code' },
-    cardName: { label: 'Name on card', test: (v) => v.trim().length > 1, msg: 'Enter the name as printed on the card' },
-    card: { label: 'Card number', test: luhn, msg: 'That card number isn’t valid — check the digits' },
-    exp: { label: 'Expiry (MM/YY)', test: expOk, msg: 'Enter a future expiry date as MM/YY' },
-    cvc: { label: 'CVC', test: (v) => /^\d{3,4}$/.test(v.trim()), msg: 'Enter the 3 or 4 digits on the back' },
+    address: { label: 'Delivery address', test: (v) => v.trim().length >= 5, msg: 'Enter the house / street / area for delivery' },
+    city: { label: 'City', test: (v) => v.trim().length >= 2, msg: 'Enter your city' },
   };
   const fieldHTML = (name, cls = '', attrs = '') => {
     const f = FIELDS[name];
     return `<div class="field ${cls}"><label for="co-${name}">${f.label}</label>
-      <input class="input" id="co-${name}" name="${name}" ${attrs} aria-describedby="err-${name}"${f.optional ? '' : ' required'}>
+      <input class="input" id="co-${name}" name="${name}" ${attrs} aria-describedby="err-${name}" required>
       <p class="field-error" id="err-${name}" hidden></p></div>`;
   };
   let shipMethod = 'standard';
@@ -669,18 +646,18 @@
       <div class="checkout">
         <form class="panel" id="co-form" novalidate>
           <div class="form-error-banner" id="co-banner" role="alert" hidden></div>
-          <fieldset class="form-section"><legend><span class="step-num">1</span>Contact</legend>
-            <div class="fields">${fieldHTML('email', 'half', 'type="email" autocomplete="email"')}${fieldHTML('phone', 'half', 'type="tel" autocomplete="tel"')}</div></fieldset>
-          <fieldset class="form-section"><legend><span class="step-num">2</span>Shipping address</legend>
-            <div class="fields">${fieldHTML('first', 'half', 'autocomplete="given-name"')}${fieldHTML('last', 'half', 'autocomplete="family-name"')}${fieldHTML('address', '', 'autocomplete="address-line1"')}${fieldHTML('apt', '', 'autocomplete="address-line2"')}${fieldHTML('city', 'third', 'autocomplete="address-level2"')}${fieldHTML('region', 'third', 'autocomplete="address-level1" maxlength="2" style="text-transform:uppercase"')}${fieldHTML('zip', 'third', 'autocomplete="postal-code" inputmode="numeric" maxlength="10"')}</div></fieldset>
+          <fieldset class="form-section"><legend><span class="step-num">1</span>Your details</legend>
+            <div class="fields">${fieldHTML('name', '', 'autocomplete="name"')}${fieldHTML('phone', 'half', 'type="tel" autocomplete="tel" inputmode="tel" placeholder="0300 1234567"')}${fieldHTML('email', 'half', 'type="email" autocomplete="email"')}</div></fieldset>
+          <fieldset class="form-section"><legend><span class="step-num">2</span>Delivery address</legend>
+            <div class="fields">${fieldHTML('address', '', 'autocomplete="street-address" placeholder="House, street, area"')}${fieldHTML('city', 'half', 'autocomplete="address-level2" placeholder="e.g. Lahore"')}
+              <div class="field"><label for="co-notes">Order notes <span class="muted">(optional)</span></label>
+                <textarea class="input co-notes" id="co-notes" name="notes" rows="3" maxlength="1000" placeholder="Landmark, best time to call, or your car's chassis / VIN number"></textarea></div></div></fieldset>
           <fieldset class="form-section"><legend><span class="step-num">3</span>Delivery</legend>
             <div class="ship-opts" id="ship-opts"></div></fieldset>
           <fieldset class="form-section"><legend><span class="step-num">4</span>Payment</legend>
-            <p class="notice notice-warn spec-sm" style="margin-bottom:14px">${icon('info', 'icon-sm')}Demo store: no payment is taken. Use test card 4242 4242 4242 4242 — never a real card.</p>
-            <div class="fields">${fieldHTML('cardName', '', 'autocomplete="off"')}${fieldHTML('card', '', 'inputmode="numeric" autocomplete="off" maxlength="23" placeholder="4242 4242 4242 4242"')}${fieldHTML('exp', 'half', 'inputmode="numeric" autocomplete="off" maxlength="5" placeholder="MM/YY"')}${fieldHTML('cvc', 'half', 'inputmode="numeric" autocomplete="off" maxlength="4"')}</div></fieldset>
+            <label class="ship-opt"><span><input type="radio" name="pay" value="cod" checked><span><b>Cash on delivery</b><span class="spec-sm muted" style="display:block">Pay in cash when your parts arrive. We'll call to confirm before dispatch.</span></span></span><span>${icon('package')}</span></label></fieldset>
           <div class="form-section">
             <button class="btn btn-primary btn-lg btn-block" type="submit" id="co-submit"></button>
-            <p class="spec-sm muted" style="margin-top:10px;text-align:center">Card details are never stored by this demo.</p>
           </div>
         </form>
         <aside class="panel summary" aria-labelledby="sum-title" id="co-summary"></aside>
@@ -700,7 +677,7 @@
       });
     }
     const btn = $('#co-submit');
-    if (btn && !btn.disabled) btn.innerHTML = `${icon('lock')}Place order · ${money(t.total)}`;
+    if (btn && !btn.disabled) btn.innerHTML = `Place order · pay ${money(t.total)} on delivery`;
     const nofit = t.items.filter((x) => fitStatus(x.p) === 'nofit').length;
     const sum = $('#co-summary'); if (!sum) return;
     sum.innerHTML = `<div class="section-title"><h2 class="label-caps" id="sum-title">Order summary</h2><button class="link spec-sm" type="button" data-act="open-cart">Edit</button></div>
@@ -709,10 +686,8 @@
         <ul>${t.items.map((x) => lineHTML(x, false)).join('')}</ul>
         <div class="totals" style="margin-top:12px">
           <div><span>Subtotal (${t.count})</span><span class="mono">${money(t.sub)}</span></div>
-          ${t.core ? `<div><span>Refundable core charges</span><span class="mono">${money(t.core)}</span></div>` : ''}
           <div><span>Shipping</span><span class="mono">${t.ship ? money(t.ship) : 'Free'}</span></div>
-          <div><span>Est. tax (${(TAX * 100).toFixed(2)}%)</span><span class="mono">${money(t.tax)}</span></div>
-          <div class="grand"><span>Total</span><span class="mono">${money(t.total)}</span></div>
+          <div class="grand"><span>Pay on delivery</span><span class="mono">${money(t.total)}</span></div>
         </div>
       </div>`;
   }
@@ -725,7 +700,7 @@
     err.innerHTML = ok ? '' : `${icon('alert', 'icon-sm')}${f.msg}`;
     return ok;
   }
-  function submitCheckout(form) {
+  async function submitCheckout(form) {
     const inputs = [...form.querySelectorAll('input.input')];
     inputs.forEach((i) => touched.add(i.name));
     const bad = inputs.filter((i) => !validateField(i));
@@ -738,29 +713,41 @@
     }
     banner.hidden = true;
     const btn = $('#co-submit');
+    const fieldsets = form.querySelectorAll('fieldset');
     btn.disabled = true;
     btn.innerHTML = `<span class="spinner" aria-hidden="true"></span>Placing order…`;
     const val = (n) => form.elements[n].value.trim();
-    const t = totals(shipMethod);
-    const order = {
-      id: 'AX-' + String(Math.floor(100000 + Math.random() * 900000)),
-      date: new Date().toISOString(),
-      email: val('email'),
-      method: shipMethod,
-      vehicle: vehicle() ? vFull(vehicle()) : null,
-      ship: { name: `${val('first')} ${val('last')}`, address: [val('address'), val('apt')].filter(Boolean).join(', '), city: val('city'), region: val('region').toUpperCase(), zip: val('zip') },
-      items: t.items.map((x) => ({ id: x.id, title: x.p.title, sku: x.p.sku, qty: x.qty, price: x.p.price })),
-      totals: { sub: t.sub, core: t.core, ship: t.ship, tax: t.tax, total: t.total },
+    const payload = {
+      name: val('name'), phone: val('phone'), email: val('email'), address: val('address'), city: val('city'),
+      notes: val('notes'), method: shipMethod, vehicle: vehicle() ? `${vFull(vehicle())} ${vehicle().engine}` : null,
+      items: state.cart.map((l) => ({ product_id: l.id, qty: l.qty })),
     };
-    form.querySelectorAll('fieldset').forEach((fs) => (fs.disabled = true)); // lock against re-submission
-    setTimeout(() => {
+    fieldsets.forEach((fs) => (fs.disabled = true)); // lock against re-submission
+    try {
+      const r = await fetch('/api/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.order) throw new Error(d.error || `We couldn't place your order (error ${r.status}). Please try again.`);
+      const o = d.order;
+      const order = {
+        id: o.id, date: o.created_at, email: o.email, phone: o.phone, method: o.shipping_method, payment: 'cod', vehicle: o.vehicle,
+        ship: { name: o.customer_name, address: o.address, city: o.city },
+        items: o.items.map((i) => ({ id: i.product_id, title: i.title, sku: i.sku, qty: i.qty, price: i.price })),
+        totals: { sub: o.subtotal, ship: o.shipping, total: o.total },
+      };
       const orders = store.get('apex.orders', []);
       orders.unshift(order);
       store.set('apex.orders', orders.slice(0, 20));
       state.cart = []; saveCart();
       shipMethod = 'standard';
       location.hash = `#/order/${order.id}`;
-    }, 1100);
+    } catch (e) {
+      fieldsets.forEach((fs) => (fs.disabled = false));
+      btn.disabled = false;
+      renderSummary();
+      banner.hidden = false;
+      banner.innerHTML = `${icon('alert')}<div><b>Your order wasn't placed.</b> ${esc(e.message === 'Failed to fetch' ? 'Check your internet connection and try again.' : e.message)} Your details are still filled in.</div>`;
+      banner.scrollIntoView({ block: 'center' });
+    }
   }
 
   // ---------- orders ----------
@@ -768,25 +755,24 @@
   const fmtDate = (d) => d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   function renderOrder(id) {
     const o = store.get('apex.orders', []).find((x) => x.id === id);
-    if (!o) return renderNotFound(`We can't find order ${esc(id)}`, 'Orders in this demo are saved in this browser only. It may have been placed on another device, or the browser data was cleared.', `<a class="btn btn-outline" href="#/orders">Order history</a>`);
+    if (!o) return renderNotFound(`We can't find order ${esc(id)}`, 'Your order history is saved in this browser. If you ordered on another device, call us with your order number.', `<a class="btn btn-outline" href="#/orders">Order history</a>`);
     const eta = o.method === 'nextday' ? fmtDate(addBusinessDays(o.date, 1)) : `${fmtDate(addBusinessDays(o.date, 3))} – ${fmtDate(addBusinessDays(o.date, 5))}`;
     main.innerHTML = `<div class="wrap page"><div class="confirm">
       <div class="confirm-head">${icon('shield', 'icon-lg')}<div>
-        <p class="label-caps" style="color:var(--fit-ink)">Order confirmed</p>
+        <p class="label-caps" style="color:var(--fit-ink)">Order received</p>
         <h1>Thanks — order <span class="mono">${esc(o.id)}</span> is in</h1>
-        <p style="margin-top:4px">Placed ${new Date(o.date).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}. A live store would email a receipt to <b>${esc(o.email)}</b>; this demo sends nothing.</p></div></div>
+        <p style="margin-top:4px">Placed ${new Date(o.date).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}. ${o.phone ? `We'll call you on <b>${esc(o.phone)}</b> to confirm before we dispatch.` : ''}</p></div></div>
       <div class="confirm-grid">
-        <div class="panel panel-pad"><h2 class="label-caps" style="margin-bottom:8px">Estimated delivery</h2><p class="mono" style="font-weight:700;font-size:16px">${eta}</p><p class="spec-sm muted" style="margin-top:4px">${o.method === 'nextday' ? 'Next-day' : 'Standard'} shipping</p></div>
-        <div class="panel panel-pad"><h2 class="label-caps" style="margin-bottom:8px">Ship to</h2><p>${esc(o.ship.name)}<br>${esc(o.ship.address)}<br>${esc(o.ship.city)}, ${esc(o.ship.region)} ${esc(o.ship.zip)}</p></div>
+        <div class="panel panel-pad"><h2 class="label-caps" style="margin-bottom:8px">Payment</h2><p style="font-weight:700;font-size:16px">${o.payment === 'cod' ? `Cash on delivery — ${money(o.totals.total)}` : money(o.totals.total)}</p><p class="spec-sm muted" style="margin-top:4px">Estimated delivery ${eta} · ${o.method === 'nextday' ? 'Next-day' : 'Standard'}</p></div>
+        <div class="panel panel-pad"><h2 class="label-caps" style="margin-bottom:8px">Deliver to</h2><p>${esc(o.ship.name)}<br>${esc(o.ship.address)}<br>${esc(o.ship.city)}${o.ship.region ? `, ${esc(o.ship.region)} ${esc(o.ship.zip || '')}` : ''}</p></div>
       </div>
       <div class="panel" style="margin-top:16px"><div class="section-title"><h2 class="label-caps">Items</h2>${o.vehicle ? `<span class="spec-sm muted">For ${esc(o.vehicle)}</span>` : ''}</div>
         <table class="spec-table"><tbody>${o.items.map((i) => `<tr><td><a href="#/p/${esc(i.id)}">${esc(i.title)}</a><span class="spec-sm muted" style="display:block">${esc(i.sku)} · Qty ${i.qty}</span></td><td class="mono" style="text-align:right">${money(i.price * i.qty)}</td></tr>`).join('')}</tbody></table>
         <div class="totals" style="padding:12px 16px;border-top:1px solid var(--slate-200)">
           <div><span>Subtotal</span><span class="mono">${money(o.totals.sub)}</span></div>
-          ${o.totals.core ? `<div><span>Core charges (refundable)</span><span class="mono">${money(o.totals.core)}</span></div>` : ''}
           <div><span>Shipping</span><span class="mono">${o.totals.ship ? money(o.totals.ship) : 'Free'}</span></div>
-          <div><span>Tax</span><span class="mono">${money(o.totals.tax)}</span></div>
-          <div class="grand"><span>Total</span><span class="mono">${money(o.totals.total)}</span></div>
+          ${o.totals.tax ? `<div><span>Tax</span><span class="mono">${money(o.totals.tax)}</span></div>` : ''}
+          <div class="grand"><span>${o.payment === 'cod' ? 'Pay on delivery' : 'Total'}</span><span class="mono">${money(o.totals.total)}</span></div>
         </div></div>
       <div class="state" style="padding:24px 0"><div class="actions"><a class="btn btn-primary btn-lg" href="#/shop">Continue shopping</a><a class="btn btn-outline btn-lg" href="#/orders">Order history</a></div></div>
     </div></div>`;

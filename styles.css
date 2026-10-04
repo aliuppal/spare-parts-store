@@ -685,3 +685,25 @@ button.fitline.unknown:hover, button.notice-warn:hover { border-color: var(--uni
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+.co-notes { height: auto; padding: 10px 12px; resize: vertical; }
+
+/* ---------- Admin: orders ---------- */
+.count-pill { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 4px; border-radius: 9999px; background: var(--orange-cta); color: #fff; font: 700 11px var(--font-mono); }
+.count-pill[hidden] { display: none; }
+.adm-filter { min-height: 32px; padding: 0 12px; border: 1px solid var(--slate-300); border-radius: var(--r); background: var(--surface); font-weight: 600; }
+.adm-filter:hover { background: var(--slate-100); }
+.adm-filter.is-on { background: var(--slate-950); border-color: var(--slate-950); color: #fff; }
+.adm-filter.is-on .muted { color: var(--slate-300); }
+.status { display: inline-block; padding: 2px 8px; border-radius: var(--r); border: 1px solid; font-weight: 600; }
+.status-new { background: var(--orange-tint); color: var(--orange-cta-hover); border-color: var(--orange-ring); }
+.status-confirmed { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }
+.status-dispatched { background: #F5F3FF; color: #6D28D9; border-color: #DDD6FE; }
+.status-delivered { background: var(--fit-tint); color: var(--fit-ink); border-color: #A7F3D0; }
+.status-cancelled { background: var(--slate-100); color: var(--slate-600); border-color: var(--slate-300); }
+.adm-order { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+.adm-order-main, .adm-order-side { display: grid; gap: 16px; }
+.adm-order-head { display: flex; align-items: center; gap: 10px; }
+.adm-order-head .adm-h2 { margin: 0; }
+.adm-contact { margin-top: 4px; }
+@media (max-width: 960px) { .adm-order { grid-template-columns: 1fr; } }
