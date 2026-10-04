@@ -35,7 +35,7 @@
   const PRICE_CEIL = Math.ceil(Math.max(...PRODUCTS.map((p) => p.price)) / 10000) * 10000;
   const YEARS = (() => { const lo = Math.min(...VEHICLES.map((v) => v.years[0])); const hi = Math.max(...VEHICLES.map((v) => v.years[1])); const out = []; for (let y = hi; y >= lo; y--) out.push(y); return out; })();
   const POS = { front: 'Front axle', rear: 'Rear axle', both: 'Front & rear', na: 'N/A' };
-  const GRADE = { oem: 'OEM / OE-equivalent', performance: 'Aftermarket performance' };
+  const GRADE = { oem: 'Genuine / OEM', performance: 'Aftermarket' };
 
   // ---------- state ----------
   const defaultFilters = () => ({ q: '', cat: null, sale: false, subs: new Set(), brands: new Set(), grades: new Set(), positions: new Set(), fitMode: 'mine', min: 0, max: PRICE_CEIL, inStock: false, shipsToday: false, sort: 'best', page: 1 });
@@ -57,10 +57,19 @@
   const vehicle = () => (state.vehicle ? { ...VEHICLES.find((v) => v.id === state.vehicle.id), year: state.vehicle.year } : null);
   const vFull = (v) => `${v.year} ${v.make} ${v.model}`;
   const vShort = (v) => `${v.year} ${v.model}`;
+  // A fit entry is "vehicle-id" or "vehicle-id@2016-2022" (model years from the source listing).
+  function parseFit(f) {
+    const [id, yrs] = f.split('@');
+    const v = VEHICLES.find((x) => x.id === id);
+    const [from, to] = yrs ? yrs.split('-').map(Number) : v ? v.years : [0, 0];
+    return { id, v, from, to };
+  }
+  const fitEntries = (p) => p.fits.filter((f) => f !== 'universal').map(parseFit).filter((e) => e.v);
   function fitStatus(p) {
     if (p.fits.includes('universal')) return 'universal';
     if (!state.vehicle) return 'unknown';
-    return p.fits.includes(state.vehicle.id) ? 'fit' : 'nofit';
+    const { id, year } = state.vehicle;
+    return fitEntries(p).some((e) => e.id === id && e.from <= year && year <= e.to) ? 'fit' : 'nofit';
   }
   const fitRank = { fit: 0, universal: 1, unknown: 1, nofit: 2 };
 
@@ -134,8 +143,13 @@
       for (let x = 36, k = 0; x <= 164; x += 8, k++) pts.push(`${x},${k % 2 ? 140 : 60}`);
       return `<rect x="28" y="52" width="144" height="96" rx="4" ${FILL}/><rect x="34" y="58" width="132" height="84" stroke-width="1"/><polyline points="${pts.join(' ')}" stroke-width="1.3"/>` + dimH(28, 172, 172, '269 mm');
     },
-    fluid() {
-      return `<path d="M58 62 L58 176 Q58 182 64 182 L150 182 Q156 182 156 176 L156 84 L130 54 L92 54 L92 62 Z"/><path d="M118 62 L138 62 Q146 62 146 70 L146 84 L132 84 L132 74 L118 74 Z" stroke-width="1.4"/><rect x="92" y="36" width="26" height="18" rx="2" ${FILL}/><rect x="68" y="100" width="78" height="56" ${FILL}/><text x="107" y="134" fill="currentColor" stroke="none" font-family="JetBrains Mono, monospace" font-size="14" font-weight="700" text-anchor="middle">0W-20</text>`;
+    fluid(label = '0W-20') {
+      return `<path d="M58 62 L58 176 Q58 182 64 182 L150 182 Q156 182 156 176 L156 84 L130 54 L92 54 L92 62 Z"/><path d="M118 62 L138 62 Q146 62 146 70 L146 84 L132 84 L132 74 L118 74 Z" stroke-width="1.4"/><rect x="92" y="36" width="26" height="18" rx="2" ${FILL}/><rect x="68" y="100" width="78" height="56" ${FILL}/><text x="107" y="134" fill="currentColor" stroke="none" font-family="JetBrains Mono, monospace" font-size="${label.length > 6 ? 11 : 14}" font-weight="700" text-anchor="middle">${label}</text>`;
+    },
+    coolant() { return ART.fluid('COOLANT'); },
+    shoe() {
+      const s = (dy) => `<g transform="translate(0 ${dy})"><path d="M40 70 A62 62 0 0 1 160 70" stroke-width="10" opacity=".18"/><path d="M36 74 A66 66 0 0 1 164 74 L152 78 A54 54 0 0 0 48 78 Z" ${FILL}/><path d="M48 78 A54 54 0 0 1 152 78"/><circle cx="44" cy="82" r="4"/><circle cx="156" cy="82" r="4"/></g>`;
+      return s(10) + s(80) + dimH(36, 164, 186, 'Ø 180');
     },
     radiator() {
       let s = `<rect x="32" y="50" width="136" height="110" ${FILL}/><rect x="18" y="42" width="14" height="126" rx="3"/><rect x="168" y="42" width="14" height="126" rx="3"/><path d="M25 42V26h22"/><path d="M175 168v14h-22"/><circle cx="175" cy="34" r="6"/>`;
@@ -179,6 +193,7 @@
 
   // ---------- small renderers ----------
   function starsHTML(p) {
+    if (!p.rating) return ''; // catalog uses real listings; no rating data is shown unless sourced
     const pct = Math.max(0, Math.min(100, (p.rating / 5) * 100));
     const star = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.2 6.6.8-4.9 4.6 1.3 6.6L12 17.4l-5.9 3.3 1.3-6.6L2.5 9.5l6.6-.8z" fill="currentColor"/></svg>';
     return `<div class="rating" role="img" aria-label="Rated ${p.rating} out of 5 from ${p.reviews.toLocaleString()} reviews">
@@ -187,14 +202,15 @@
   }
   function stockHTML(p) {
     if (p.stock <= 0) return `<p class="stock out spec-sm"><span class="dot"></span>Out of stock</p>`;
-    if (p.stock <= 5) return `<p class="stock low spec-sm"><span class="dot"></span>Low stock: only ${p.stock} left</p>`;
-    return `<p class="stock in spec-sm"><span class="dot"></span>In stock (${p.stock})${p.shipsToday ? ' — ships today' : ''}</p>`;
+    return `<p class="stock in spec-sm"><span class="dot"></span>Available to order</p>`;
   }
   function gradeBadge(p) {
     return p.grade === 'oem'
-      ? `<span class="badge badge-oem spec-sm">${p.oem ? 'OEM #' + esc(p.oem) : 'OE equivalent'}</span>`
-      : `<span class="badge badge-after spec-sm">Aftermarket perf.</span>`;
+      ? `<span class="badge badge-oem spec-sm">${p.oem ? 'OEM #' + esc(p.oem) : 'Genuine / OEM'}</span>`
+      : `<span class="badge badge-after spec-sm">Aftermarket</span>`;
   }
+  const sourceLine = (p) => p.src
+    ? `<p class="spec-sm muted source-line">${icon('info', 'icon-sm')}<span>Price as listed on <a class="link" href="${esc(p.src)}" target="_blank" rel="noopener">PakWheels</a>, checked ${esc(p.checked)}</span></p>` : '';
   function fitLine(p) {
     const v = vehicle();
     const s = fitStatus(p);
@@ -237,7 +253,7 @@
   // ---------- catalog filtering ----------
   function matchesQuery(p, q) {
     if (!q) return true;
-    const vehicles = p.fits.map((id) => VEHICLES.find((v) => v.id === id)).filter(Boolean).map((v) => `${v.make} ${v.model} ${v.engine}`).join(' ');
+    const vehicles = fitEntries(p).map(({ v }) => `${v.make} ${v.model} ${v.engine}`).join(' ');
     const hay = `${p.title} ${p.brand} ${p.sub} ${catName(p.category)} ${vehicles} ${p.fits.includes('universal') ? 'universal' : ''}`.toLowerCase();
     const codes = `${norm(p.sku)} ${norm(p.oem)}`;
     return q.toLowerCase().split(/\s+/).filter(Boolean).every((t) => {
@@ -265,9 +281,8 @@
     });
   }
   function sortList(list) {
-    const score = (p) => p.rating * Math.log10(p.reviews + 10);
     const by = {
-      best: (a, b) => fitRank[fitStatus(a)] - fitRank[fitStatus(b)] || (b.stock > 0) - (a.stock > 0) || score(b) - score(a),
+      best: (a, b) => fitRank[fitStatus(a)] - fitRank[fitStatus(b)] || (b.stock > 0) - (a.stock > 0) || (a.grade === 'oem') - (b.grade === 'oem') || a.price - b.price,
       'price-asc': (a, b) => a.price - b.price,
       'price-desc': (a, b) => b.price - a.price,
       reviews: (a, b) => b.reviews - a.reviews,
@@ -340,9 +355,6 @@
           </div>
           <div class="range-values spec-sm"><span data-out="min">${money(f.min)}</span><span data-out="max">${money(f.max)}${f.max >= PRICE_CEIL ? '+' : ''}</span></div>`)}
         ${posAll.length ? facet('pos', 'Axle position', posAll.map((k) => optHTML(ctx, 'pos', k, POS[k], posCounts[k] || 0, f.positions.has(k))).join('')) : ''}
-        ${facet('avail', 'Availability', `
-          <label class="switch"><span>In stock only</span><input type="checkbox" role="switch" data-f="inStock" data-key="${ctx}:inStock"${f.inStock ? ' checked' : ''}></label>
-          <label class="switch"><span>Ships today</span><input type="checkbox" role="switch" data-f="shipsToday" data-key="${ctx}:shipsToday"${f.shipsToday ? ' checked' : ''}></label>`)}
       </div>
     </div>`;
   }
@@ -408,7 +420,7 @@
                 <button class="btn btn-outline filter-toggle" type="button" data-act="open-filters" aria-controls="filter-drawer">${icon('tune')}Filters${nChips ? ` (${nChips})` : ''}</button>
                 <label class="sr-only" for="sort">Sort by</label>
                 <select id="sort" class="select" data-f="sort" data-key="sort">
-                  ${[['best', 'Best fit & rating'], ['price-asc', 'Price: low to high'], ['price-desc', 'Price: high to low'], ['reviews', 'Most reviewed'], ['rating', 'Highest rated']].map(([k, l]) => `<option value="${k}"${f.sort === k ? ' selected' : ''}>${l}</option>`).join('')}
+                  ${[['best', 'Best fit'], ['price-asc', 'Price: low to high'], ['price-desc', 'Price: high to low']].map(([k, l]) => `<option value="${k}"${f.sort === k ? ' selected' : ''}>${l}</option>`).join('')}
                 </select>
                 <div class="seg" role="group" aria-label="Layout">
                   <button type="button" data-act="view" data-view="grid" aria-pressed="${state.view === 'grid'}" aria-label="Grid view" data-key="view:grid">${icon('grid')}</button>
@@ -443,10 +455,10 @@
     if (!p) return renderNotFound('Part not found', `There's no part with the id “${esc(id)}”. It may have been removed from the catalog.`);
     pdpQty = 1;
     const v = vehicle(), s = fitStatus(p);
-    const fits = p.fits.filter((x) => x !== 'universal').map((x) => VEHICLES.find((vv) => vv.id === x)).filter(Boolean);
+    const fits = fitEntries(p);
     const fitBox = {
       fit: () => `<div class="fit-box">${icon('shield', 'icon-lg')}<div><h3>Fits your ${esc(vFull(v))}</h3><p>Verified for the ${esc(v.engine)}. Covered by the fitment guarantee.</p></div></div>`,
-      nofit: () => `<div class="fit-box nofit">${icon('alert', 'icon-lg')}<div><h3>Doesn't fit your ${esc(vFull(v))}</h3><p>This part is listed for ${fits.map((x) => esc(`${x.make} ${x.model} ${x.engine}`)).join('; ')}.</p><p style="margin-top:8px"><a class="link" href="#/c/${p.category}">Find ${esc(catName(p.category).toLowerCase())} that fit</a></p></div></div>`,
+      nofit: () => `<div class="fit-box nofit">${icon('alert', 'icon-lg')}<div><h3>Doesn't fit your ${esc(vFull(v))}</h3><p>This part is listed for ${fits.map(({ v: x, from, to }) => esc(`${x.make} ${x.model} ${x.engine} (${from}–${to})`)).join('; ')}.</p><p style="margin-top:8px"><a class="link" href="#/c/${p.category}">Find ${esc(catName(p.category).toLowerCase())} that fit</a></p></div></div>`,
       universal: () => `<div class="fit-box universal">${icon('info', 'icon-lg')}<div><h3>Universal fitment</h3><p>Not vehicle-specific. Check the specifications below against your application.</p></div></div>`,
       unknown: () => `<div class="fit-box unknown">${icon('car', 'icon-lg')}<div><h3>Will this fit?</h3><p>Add your vehicle and we'll confirm the fit before you buy.</p><p style="margin-top:8px"><button class="link" type="button" data-act="garage">Add my vehicle</button></p></div></div>`,
     }[s]();
@@ -482,11 +494,12 @@
             : `<div class="notice notice-warn">${icon('info', 'icon-sm')}Out of stock. Check back soon, or compare similar parts below.</div>`}
             <p class="spec-sm muted" style="display:flex;gap:6px;align-items:center">${icon('truck', 'icon-sm')}Free standard shipping over ${money(FREE_SHIP)} · 60-day returns</p>
           </div>
+          ${sourceLine(p)}
           <p>${esc(p.desc)}</p>
           <div class="panel"><div class="section-title"><h2 class="label-caps">Technical specifications</h2></div>
             <table class="spec-table spec"><tbody>${p.specs.map(([k, val]) => `<tr><th scope="row">${esc(k)}</th><td>${esc(val)}</td></tr>`).join('')}<tr><th scope="row">Part grade</th><td>${GRADE[p.grade]}</td></tr></tbody></table></div>
           <div class="panel"><div class="section-title"><h2 class="label-caps">Confirmed fitment</h2><span class="spec-sm muted">${p.fits.includes('universal') ? 'Universal' : `${fits.length} vehicle${fits.length === 1 ? '' : 's'}`}</span></div>
-            ${fits.length ? `<ul class="compat-list spec-sm">${fits.map((x) => `<li${state.vehicle && state.vehicle.id === x.id ? ' class="is-mine"' : ''}><span>${esc(`${x.make} ${x.model}`)} · ${esc(x.engine)}</span><span class="muted">${x.years[0]}–${x.years[1]}</span></li>`).join('')}</ul>`
+            ${fits.length ? `<ul class="compat-list spec-sm">${fits.map(({ id, v: x, from, to }) => `<li${state.vehicle && state.vehicle.id === id && from <= state.vehicle.year && state.vehicle.year <= to ? ' class="is-mine"' : ''}><span>${esc(`${x.make} ${x.model}`)} · ${esc(x.engine)}</span><span class="muted">${from}–${to}</span></li>`).join('')}</ul>`
               : `<p class="spec-sm muted" style="padding:12px 16px">Not tied to a specific vehicle.</p>`}</div>
         </div>
       </div>
@@ -912,8 +925,6 @@
         ${row('Fitment', (p) => `<span class="fit-txt ${fitStatus(p)}">${fitTxt[fitStatus(p)]}</span>`)}
         ${row('Brand', (p) => esc(p.brand))}
         ${row('Grade', (p) => GRADE[p.grade])}
-        ${row('Rating', (p) => `${p.rating.toFixed(1)} (${p.reviews})`)}
-        ${row('Stock', (p) => (p.stock > 0 ? `${p.stock} in stock` : 'Out of stock'))}
         ${keys.map((k) => row(esc(k), (p) => esc((p.specs.find(([kk]) => kk === k) || [null, '—'])[1]))).join('')}
         <tr><th scope="row"><span class="sr-only">Action</span></th>${items.map((p) => `<td>${p.stock > 0 ? `<button class="btn btn-primary" type="button" data-act="add" data-id="${p.id}">Add to cart</button>` : ''}</td>`).join('')}</tr>
       </tbody></table></div>`;

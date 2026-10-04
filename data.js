@@ -1,6 +1,7 @@
-/* ApexAuto catalog — SAMPLE DATA for the demo storefront (Pakistan market).
-   Prices (PKR), stock, ratings and part numbers are illustrative, not real listings.
-   `fits` holds vehicle ids from VEHICLES, or the string "universal". */
+/* ApexAuto catalog — real listings from the PakWheels Auto Store (pakwheels.com/accessories-spare-parts),
+   prices in PKR as listed on 2026-10-04. `src` links each product to its source listing.
+   `fits` holds vehicle ids, optionally with the listing's model years ("honda-civic-15t@2016-2022"), or "universal".
+   Stock is not tracked: every listing is shown as available to order. */
 
 window.VEHICLES = [
   {"id":"suzuki-mehran","make":"Suzuki","model":"Mehran","engine":"0.8L F8B (VX / VXR)","years":[2012,2019]},
@@ -27,134 +28,333 @@ window.VEHICLES = [
 ];
 
 window.CATEGORIES = [
-  {"id":"brakes","name":"Brakes & Rotors"},
-  {"id":"suspension","name":"Suspension"},
+  {"id":"brakes","name":"Brakes"},
+  {"id":"filters","name":"Filters"},
+  {"id":"oils","name":"Oils & Coolants"},
   {"id":"engine","name":"Engine & Ignition"},
-  {"id":"filters","name":"Filters & Fluids"},
   {"id":"cooling","name":"Cooling"},
-  {"id":"electrical","name":"Electrical"},
-  {"id":"exhaust","name":"Exhaust"}
+  {"id":"electrical","name":"Electrical"}
 ];
 
 window.PRODUCTS = [
   {
-    id: "p-001", sku: "BRM-09.C892.11", oem: "45251-TBA-A01", brand: "Brembo", grade: "performance", title: "Brembo GT-S Drilled Front 2-Piece Brake Rotor Kit", category: "brakes", sub: "Rotors", art: "rotor", position: "front", price: 120399, was: 136899, unit: "Per axle pair", rating: 4.9, reviews: 128, stock: 8, shipsToday: true, fits: ["honda-civic-15t","toyota-corolla-18"],
-    specs: [["Diameter","300 mm"],["Thickness","28 mm"],["Material","High-carbon cast iron"],["Vane design","Bi-directional curved, 36 vanes"],["Hat finish","Black anodized aluminium"]],
-    desc: "Two-piece floating rotors with a cross-drilled friction ring that sheds heat on repeated hard stops — think Murree or Kaghan descents. Direct bolt-on for the Civic 1.5 Turbo and Corolla Altis Grande; no caliper spacers required."
+    id: "pw-8991502", sku: "PW-8991502", oem: null, brand: "MK Japan", grade: "performance", title: "Toyota Corolla 2014-2023 Front Disc Brake Pads", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 5499, unit: "Front axle set", stock: 99, fits: ["toyota-corolla-16@2015-2023","toyota-corolla-18@2015-2023"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-corolla-2014-2023-mk-japan-front-disc-brake-pads-8991502", checked: "2026-10-04",
+    specs: [["Brand","MK Japan"],["Listed fitment","Toyota Corolla 1.6L 1ZR-FE (2015–2023); Toyota Corolla 1.8L 2ZR-FE (2015–2023)"],["Pack","Front axle set"],["Source listing","PakWheels #8991502"]],
+    desc: "Aftermarket brake pad from MK Japan, listed for Toyota Corolla 1.6L 1ZR-FE (2015–2023); Toyota Corolla 1.8L 2ZR-FE (2015–2023). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-002", sku: "PS-Z26-1504", oem: "45022-TBA-A01", brand: "PowerStop", grade: "performance", title: "PowerStop Z26 Carbon-Fiber Ceramic Brake Pad Set (Front & Rear)", category: "brakes", sub: "Pads", art: "pads", position: "both", price: 46099, unit: "Front + rear set", rating: 4.8, reviews: 312, stock: 24, shipsToday: true, freeNextDay: true, fits: ["honda-civic-18","honda-civic-15t","honda-city-15","honda-brv"],
-    specs: [["Compound","Carbon-fiber ceramic, low dust"],["Hardware","Stainless shims included"],["Max operating temp","1,500 °F"],["Wear sensor","Not included — reuse OE"]],
-    desc: "Street-performance pad with a carbon-fiber reinforced ceramic compound. Quiet at idle, stable bite when warm, and noticeably less wheel dust than OE semi-metallic pads."
+    id: "pw-2981294", sku: "PW-2981294", oem: null, brand: "Toyota Genuine", grade: "oem", title: "Toyota Corolla Genuine Front Brake Pads 2014-2024", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 20500, unit: "Front axle set", stock: 99, fits: ["toyota-corolla-16@2015-2024","toyota-corolla-18@2015-2024"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-corolla-2014-2018-genuine-front-brake-pads-2981294", checked: "2026-10-04",
+    specs: [["Brand","Toyota Genuine"],["Listed fitment","Toyota Corolla 1.6L 1ZR-FE (2015–2024); Toyota Corolla 1.8L 2ZR-FE (2015–2024)"],["Pack","Front axle set"],["Source listing","PakWheels #2981294"]],
+    desc: "Genuine / OEM brake pad from Toyota Genuine, listed for Toyota Corolla 1.6L 1ZR-FE (2015–2024); Toyota Corolla 1.8L 2ZR-FE (2015–2024). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-003", sku: "BOS-QC-50011", oem: "42431-02240", brand: "Bosch", grade: "oem", title: "Bosch QuietCast Premium Coated Rear Disc Brake Rotor", category: "brakes", sub: "Rotors", art: "rotor-plain", position: "rear", price: 33299, unit: "Each", rating: 4.7, reviews: 89, stock: 15, shipsToday: true, fits: ["toyota-corolla-16","toyota-corolla-18"],
-    specs: [["Diameter","270 mm solid"],["Balancing","100% precision balanced"],["Coating","Al-Zn anti-corrosion"],["Min. thickness","9.0 mm"]],
-    desc: "OE-equivalent rear rotor with a full anti-corrosion coating, so it stays clean through monsoon season and behind open-spoke alloys."
+    id: "pw-2760502", sku: "A-73 AD", oem: null, brand: "Asuki", grade: "performance", title: "Asuki Advanced Front Brake Pad A-73 AD — Corolla 2009-2019", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 5999, was: 6499, unit: "Front axle set", stock: 99, fits: ["toyota-corolla-16@2015-2019","toyota-corolla-18@2015-2019"], src: "https://www.pakwheels.com/accessories-spare-parts/asuki-advanced-front-brake-pad-for-toyota-corolla-2009-2019-a-73-ad-2760502", checked: "2026-10-04",
+    specs: [["Brand","Asuki"],["Part no.","A-73 AD"],["Listed fitment","Toyota Corolla 1.6L 1ZR-FE (2015–2019); Toyota Corolla 1.8L 2ZR-FE (2015–2019)"],["Pack","Front axle set"],["Source listing","PakWheels #2760502"]],
+    desc: "Aftermarket brake pad from Asuki, listed for Toyota Corolla 1.6L 1ZR-FE (2015–2019); Toyota Corolla 1.8L 2ZR-FE (2015–2019). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-004", sku: "ST-950.34503", oem: null, brand: "StopTech", grade: "performance", title: "StopTech Stainless Steel Braided Brake Line Kit (4-Corner)", category: "brakes", sub: "Lines & Hoses", art: "lines", position: "both", price: 39799, unit: "Complete set", rating: 4.9, reviews: 74, stock: 3, shipsToday: true, fits: ["honda-civic-18","honda-civic-15t","toyota-corolla-18"],
-    specs: [["Core hose","Extruded PTFE inner tube"],["Outer braid","304 stainless weave"],["Fittings","Zinc-plated steel banjo"],["Compliance","DOT FMVSS 106"]],
-    desc: "Replaces the rubber flex hoses at all four corners. Eliminates line expansion for a firmer, more consistent pedal on track days."
+    id: "pw-13195070", sku: "PW-13195070", oem: null, brand: "iBrake Indonesia", grade: "performance", title: "Toyota Corolla Grande 2014-2018 Rear Brake Pads", category: "brakes", sub: "Brake pads", art: "pads", position: "rear", price: 6480, was: 7200, unit: "Rear axle set", stock: 99, fits: ["toyota-corolla-18@2015-2018"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-corolla-grande-2014-2018-rear-brake-pads-ibrake-indonesia-13195070", checked: "2026-10-04",
+    specs: [["Brand","iBrake Indonesia"],["Listed fitment","Toyota Corolla 1.8L 2ZR-FE (2015–2018)"],["Pack","Rear axle set"],["Source listing","PakWheels #13195070"]],
+    desc: "Aftermarket brake pad from iBrake Indonesia, listed for Toyota Corolla 1.8L 2ZR-FE (2015–2018). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-005", sku: "AKE-EUR1505", oem: "04465-02220", brand: "Akebono", grade: "oem", title: "Akebono EURO Ultra-Premium Ceramic Front Brake Pads", category: "brakes", sub: "Pads", art: "pads", position: "front", price: 25199, unit: "Front axle", rating: 4.8, reviews: 204, stock: 19, fits: ["toyota-corolla-16","toyota-corolla-18","toyota-yaris-13"],
-    specs: [["Compound","Ultra-premium ceramic"],["Rotor wear","Very low"],["Noise control","OE-level acoustic shims"],["Dust","Ultra-low"]],
-    desc: "The daily-driver pick: quiet, clean and gentle on rotors, with pedal feel close to the factory pad."
+    id: "pw-10039025", sku: "45022-TEA-T00", oem: "45022-TEA-T00", brand: "Honda Genuine", grade: "oem", title: "Honda Civic 2016-22 Front Brake Pads Genuine", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 20010, was: 23000, unit: "Front axle set", stock: 99, fits: ["honda-civic-18@2016-2021","honda-civic-15t@2016-2022"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-civic-2016-22-front-disc-pad-brake-pad-genuine-10039025", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Part no.","45022-TEA-T00"],["Listed fitment","Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2022)"],["Pack","Front axle set"],["Source listing","PakWheels #10039025"]],
+    desc: "Genuine / OEM brake pad from Honda Genuine, listed for Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2022). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-006", sku: "BIL-24-275226", oem: null, brand: "Bilstein", grade: "performance", title: "Bilstein B8 Performance Plus Monotube Front Shock Absorber", category: "suspension", sub: "Shocks & Struts", art: "shock", position: "front", price: 80899, unit: "Per unit", rating: 5, reviews: 46, stock: 6, fits: ["honda-civic-18","honda-civic-15t"],
-    specs: [["Design","46 mm inverted monotube"],["Application","Lowered Civic (up to 30 mm)"],["Valving","Vehicle-specific digressive"],["Warranty","Limited lifetime"]],
-    desc: "Shortened-stroke monotube built for cars on lowering springs. Keeps full bump travel and controls rebound that OE dampers can't handle."
+    id: "pw-12696024", sku: "PW-12696024", oem: null, brand: "Honda Genuine", grade: "oem", title: "Honda Civic 2022-24 Front Brake Pads Genuine", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 22566, unit: "Front axle set", stock: 99, fits: ["honda-civic-15t@2022-2024"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-civic-2022-24-front-disc-pad-brake-pad-genuine-12696024", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Listed fitment","Honda Civic 1.5L L15B7 VTEC Turbo (2022–2024)"],["Pack","Front axle set"],["Source listing","PakWheels #12696024"]],
+    desc: "Genuine / OEM brake pad from Honda Genuine, listed for Honda Civic 1.5L L15B7 VTEC Turbo (2022–2024). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-007", sku: "EIB-E10-20-012", oem: null, brand: "Eibach", grade: "performance", title: "Eibach Pro-Kit Performance Lowering Springs", category: "suspension", sub: "Springs", art: "spring", position: "both", price: 92099, unit: "Set of 4", rating: 4.6, reviews: 158, stock: 11, shipsToday: true, fits: ["honda-civic-18","honda-civic-15t"],
-    specs: [["Drop (front)","1.0 in"],["Drop (rear)","1.4 in"],["Rate type","Progressive"],["Finish","Powder coat"]],
-    desc: "A modest drop that tightens the stance without scraping on speed breakers. Pairs with stock or performance dampers."
+    id: "pw-11249745", sku: "PW-11249745", oem: null, brand: "MK Japan", grade: "performance", title: "Honda Civic 2016-2022 Front Brake Pads", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 7399, was: 8500, unit: "Front axle set", stock: 99, fits: ["honda-civic-18@2016-2021","honda-civic-15t@2016-2022"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-civic-2016-2022-front-brake-pads-mk-japan-11249745", checked: "2026-10-04",
+    specs: [["Brand","MK Japan"],["Listed fitment","Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2022)"],["Pack","Front axle set"],["Source listing","PakWheels #11249745"]],
+    desc: "Aftermarket brake pad from MK Japan, listed for Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2022). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-008", sku: "MOOG-K750118", oem: "43330-09510", brand: "Moog", grade: "oem", title: "Moog Problem Solver Front Lower Ball Joint", category: "suspension", sub: "Ball Joints", art: "balljoint", position: "front", price: 15299, unit: "Each", rating: 4.5, reviews: 391, stock: 42, shipsToday: true, fits: ["toyota-fortuner-28","toyota-hilux-28","toyota-fortuner-27"],
-    specs: [["Type","Press-in, greaseable"],["Bearing","Powdered-metal gusher"],["Boot","Polyurethane"],["Torque (castle nut)","85 ft-lb"]],
-    desc: "Greaseable replacement for the sealed factory joint — a common wear item on Hilux and Fortuner driven on rough roads. The gusher bearing keeps fresh grease where it is needed."
+    id: "pw-13036495", sku: "PW-13036495", oem: null, brand: "AutomanPK", grade: "performance", title: "Honda Civic 2016-2021 (Civic X) Rear Brake Pads", category: "brakes", sub: "Brake pads", art: "pads", position: "rear", price: 6999, was: 7500, unit: "Rear axle set", stock: 99, fits: ["honda-civic-18@2016-2021","honda-civic-15t@2016-2021"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-civic-2016-2021-civic-x-rear-brake-pads-automanpk-13036495", checked: "2026-10-04",
+    specs: [["Brand","AutomanPK"],["Listed fitment","Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2021)"],["Pack","Rear axle set"],["Source listing","PakWheels #13036495"]],
+    desc: "Aftermarket brake pad from AutomanPK, listed for Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2021). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-009", sku: "NGK-97968", oem: "90919-01253", brand: "NGK", grade: "oem", title: "NGK Laser Iridium Spark Plug", category: "engine", sub: "Spark Plugs", art: "plug", position: "na", price: 4899, unit: "Each — engine takes 4", rating: 4.9, reviews: 512, stock: 240, shipsToday: true, fits: ["toyota-corolla-16","toyota-corolla-18","toyota-yaris-13"],
-    specs: [["Gap (pre-set)","0.043 in / 1.1 mm"],["Thread","M12 × 1.25"],["Reach","26.5 mm"],["Hex","14 mm bi-hex"]],
-    desc: "OE-supplier plug for Toyota ZR and NR engines. Pre-gapped — do not adjust. Replace every 60,000 km."
+    id: "pw-11249842", sku: "PW-11249842", oem: null, brand: "MK Japan", grade: "performance", title: "Honda City 2021-2025 Front Brake Pads", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 7499, was: 8500, unit: "Front axle set", stock: 99, fits: ["honda-city-12@2021-2025","honda-city-15@2021-2025"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-city-2021-2025-front-brake-pads-mk-japan-11249842", checked: "2026-10-04",
+    specs: [["Brand","MK Japan"],["Listed fitment","Honda City 1.2L L12B i-VTEC (2021–2025); Honda City 1.5L L15Z (2021–2025)"],["Pack","Front axle set"],["Source listing","PakWheels #11249842"]],
+    desc: "Aftermarket brake pad from MK Japan, listed for Honda City 1.2L L12B i-VTEC (2021–2025); Honda City 1.5L L15Z (2021–2025). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-010", sku: "BOS-0221504470", oem: "33400-84M00", brand: "Bosch", grade: "oem", title: "Bosch Ignition Coil Pack", category: "engine", sub: "Ignition Coils", art: "coil", position: "na", price: 13699, was: 15699, unit: "Each", rating: 4.7, reviews: 233, stock: 0, fits: ["suzuki-cultus","suzuki-wagonr","suzuki-swift"],
-    specs: [["Output","40 kV"],["Connector","3-pin"],["Boot length","102 mm"]],
-    desc: "Genuine-spec coil for Suzuki K-series engines. A misfire that follows a coil when swapped between cylinders is the classic sign it is time."
+    id: "pw-12998763", sku: "PW-12998763", oem: null, brand: "Akebono", grade: "performance", title: "Akebono Front Brake Pads — Honda City 2022-2025", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 11899, was: 13998, unit: "Front axle set", stock: 99, fits: ["honda-city-12@2022-2025","honda-city-15@2022-2025"], src: "https://www.pakwheels.com/accessories-spare-parts/akebono-front-brake-pads-for-honda-city-2022-2025-genuine-quality-smooth-and-reliable-braking-12998763", checked: "2026-10-04",
+    specs: [["Brand","Akebono"],["Listed fitment","Honda City 1.2L L12B i-VTEC (2022–2025); Honda City 1.5L L15Z (2022–2025)"],["Pack","Front axle set"],["Source listing","PakWheels #12998763"]],
+    desc: "Aftermarket brake pad from Akebono, listed for Honda City 1.2L L12B i-VTEC (2022–2025); Honda City 1.5L L15Z (2022–2025). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-011", sku: "GAT-K060923", oem: "90916-02706", brand: "Gates", grade: "oem", title: "Gates Micro-V Serpentine Belt", category: "engine", sub: "Belts", art: "belt", position: "na", price: 10899, unit: "Each", rating: 4.8, reviews: 177, stock: 33, shipsToday: true, fits: ["toyota-fortuner-28","toyota-hilux-28"],
-    specs: [["Ribs","6"],["Effective length","92.4 in"],["Material","EPDM"]],
-    desc: "EPDM belt that wears evenly and stays quiet. Check the tensioner arm travel when replacing."
+    id: "pw-2082036", sku: "A-208 AD", oem: null, brand: "Asuki", grade: "performance", title: "Asuki Advanced Front Brake Pad A-208 AD — Cultus 2017-2024", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 5999, was: 6734, unit: "Front axle set", stock: 99, fits: ["suzuki-cultus@2017-2024"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-cultus-asuki-advanced-front-brake-pad-a-208-ad-2082036", checked: "2026-10-04",
+    specs: [["Brand","Asuki"],["Part no.","A-208 AD"],["Listed fitment","Suzuki Cultus 1.0L K10B (2017–2024)"],["Pack","Front axle set"],["Source listing","PakWheels #2082036"]],
+    desc: "Aftermarket brake pad from Asuki, listed for Suzuki Cultus 1.0L K10B (2017–2024). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-012", sku: "MAN-HU6020Z", oem: "15400-RTA-003", brand: "Mann-Filter", grade: "oem", title: "Mann-Filter Spin-On Oil Filter", category: "filters", sub: "Oil Filters", art: "oilfilter", position: "na", price: 4199, unit: "Each", rating: 4.9, reviews: 846, stock: 310, shipsToday: true, fits: ["honda-civic-18","honda-civic-15t","honda-city-12","honda-city-15","honda-brv"],
-    specs: [["Type","Spin-on, anti-drain-back valve"],["Includes","Sealing gasket"],["Change interval","5,000 km"]],
-    desc: "Factory-spec spin-on filter for Honda engines. Change it with every oil service."
+    id: "pw-8991371", sku: "PW-8991371", oem: null, brand: "MK Japan", grade: "performance", title: "Suzuki Cultus 2017-2023 Front Disc Brake Pads", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 4000, unit: "Front axle set", stock: 99, fits: ["suzuki-cultus@2017-2023"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-cultus-2017-2023-mk-japan-front-disc-brake-pads-8991371", checked: "2026-10-04",
+    specs: [["Brand","MK Japan"],["Listed fitment","Suzuki Cultus 1.0L K10B (2017–2023)"],["Pack","Front axle set"],["Source listing","PakWheels #8991371"]],
+    desc: "Aftermarket brake pad from MK Japan, listed for Suzuki Cultus 1.0L K10B (2017–2023). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-013", sku: "KN-33-2481", oem: null, brand: "K&N", grade: "performance", title: "K&N Washable High-Flow Panel Air Filter", category: "filters", sub: "Air Filters", art: "airfilter", position: "na", price: 19599, unit: "Each", rating: 4.6, reviews: 402, stock: 27, shipsToday: true, fits: ["honda-civic-18","honda-civic-15t"],
-    specs: [["Media","Oiled cotton gauze"],["Service interval","Up to 50,000 mi"],["Dimensions","10.6 × 8.1 × 1.6 in"]],
-    desc: "Drop-in replacement for the paper element. Clean and re-oil it instead of buying a new filter."
+    id: "pw-9348485", sku: "PW-9348485", oem: null, brand: "MK Japan", grade: "performance", title: "Suzuki Mehran Front Brake Pads", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 3000, unit: "Front axle set", stock: 99, fits: ["suzuki-mehran"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-mehran-mk-japan-front-brake-pads-9348485", checked: "2026-10-04",
+    specs: [["Brand","MK Japan"],["Listed fitment","Suzuki Mehran 0.8L F8B (2012–2019)"],["Pack","Front axle set"],["Source listing","PakWheels #9348485"]],
+    desc: "Aftermarket brake pad from MK Japan, listed for Suzuki Mehran 0.8L F8B (2012–2019). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-014", sku: "FRAM-CF10285", oem: null, brand: "FRAM", grade: "oem", title: "FRAM Fresh Breeze Cabin Air Filter with Arm & Hammer", category: "filters", sub: "Cabin Filters", art: "airfilter", position: "na", price: 5999, unit: "Each", rating: 4.5, reviews: 1290, stock: 96, shipsToday: true, fits: ["toyota-corolla-16","toyota-corolla-18","toyota-yaris-13","honda-city-12","honda-city-15","honda-civic-18","honda-civic-15t","kia-sportage","hyundai-tucson","changan-alsvin","mg-hs"],
-    specs: [["Media","Baking-soda activated"],["Change interval","12,000 mi"],["Install","Behind glovebox, no tools"]],
-    desc: "Traps dust and pollen and neutralises odours before they reach the cabin — worth changing more often in dusty summers."
+    id: "pw-4853401", sku: "P-183", oem: null, brand: "Guard", grade: "performance", title: "Guard Front Brake Pad P-183 — Mehran 1988-2019", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 1638, unit: "Front axle set", stock: 99, fits: ["suzuki-mehran"], src: "https://www.pakwheels.com/accessories-spare-parts/guard-front-brake-pad-for-suzuki-mehran-1988-2019-p-183-4853401", checked: "2026-10-04",
+    specs: [["Brand","Guard"],["Part no.","P-183"],["Listed fitment","Suzuki Mehran 0.8L F8B (2012–2019)"],["Pack","Front axle set"],["Source listing","PakWheels #4853401"]],
+    desc: "Aftermarket brake pad from Guard, listed for Suzuki Mehran 0.8L F8B (2012–2019). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-015", sku: "MOB-124316", oem: null, brand: "Mobil 1", grade: "oem", title: "Mobil 1 Extended Performance 0W-20 Full Synthetic (4 L)", category: "filters", sub: "Fluids", art: "fluid", position: "na", price: 10399, unit: "4 L pack", rating: 4.9, reviews: 2210, stock: 500, shipsToday: true, fits: ["universal"],
-    specs: [["Viscosity","0W-20"],["Approvals","API SP, ILSAC GF-6A"],["Volume","4 L"]],
-    desc: "Universal fitment — confirm the viscosity in your owner's manual before ordering."
+    id: "pw-13213314", sku: "PW-13213314", oem: null, brand: "iBrake Indonesia", grade: "performance", title: "Suzuki Mehran 2012-2019 Rear Brake Shoe", category: "brakes", sub: "Brake shoes", art: "shoe", position: "rear", price: 7400, unit: "Rear axle set", stock: 99, fits: ["suzuki-mehran@2012-2019"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-mehran-2012-2019-rear-brake-shoe-ibrake-indonesia-13213314", checked: "2026-10-04",
+    specs: [["Brand","iBrake Indonesia"],["Listed fitment","Suzuki Mehran 0.8L F8B (2012–2019)"],["Pack","Rear axle set"],["Source listing","PakWheels #13213314"]],
+    desc: "Aftermarket brake shoe from iBrake Indonesia, listed for Suzuki Mehran 0.8L F8B (2012–2019). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-016", sku: "CSF-7090", oem: "16400-0T040", brand: "CSF", grade: "performance", title: "CSF High-Performance All-Aluminium Radiator", category: "cooling", sub: "Radiators", art: "radiator", position: "na", price: 111699, unit: "Each", rating: 4.7, reviews: 63, stock: 4, fits: ["toyota-corolla-16","toyota-corolla-18"],
-    specs: [["Core","2-row, 40 mm"],["Construction","TIG-welded aluminium"],["Fitment","Direct, reuses OE fans"]],
-    desc: "Higher-capacity core for hot summers and stop-start city traffic. Drops coolant temps under sustained load."
+    id: "pw-11250445", sku: "PW-11250445", oem: null, brand: "MK Japan", grade: "performance", title: "Toyota Yaris 1.3 2020-2024 Front Brake Pads", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 8900, unit: "Front axle set", stock: 99, fits: ["toyota-yaris-13@2020-2024"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-yaris-13-2020-2024-front-brake-pads-mk-japan-11250445", checked: "2026-10-04",
+    specs: [["Brand","MK Japan"],["Listed fitment","Toyota Yaris 1.3L 2NR-FE (2020–2024)"],["Pack","Front axle set"],["Source listing","PakWheels #11250445"]],
+    desc: "Aftermarket brake pad from MK Japan, listed for Toyota Yaris 1.3L 2NR-FE (2020–2024). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-017", sku: "AIS-WPT-190", oem: "16100-39466", brand: "Aisin", grade: "oem", title: "Aisin Engine Water Pump with Gasket", category: "cooling", sub: "Water Pumps", art: "pump", position: "na", price: 31499, unit: "Each", rating: 4.8, reviews: 140, stock: 13, shipsToday: true, fits: ["toyota-corolla-16","toyota-corolla-18"],
-    specs: [["Impeller","Cast iron"],["Includes","Gasket"],["Supplier","OE supplier"]],
-    desc: "OE-supplier pump. Replace the thermostat at the same time while the system is drained."
+    id: "pw-8294150", sku: "2010", oem: null, brand: "Asuki", grade: "performance", title: "Asuki Rear Brake Shoe 2010 — Yaris 2020-2023", category: "brakes", sub: "Brake shoes", art: "shoe", position: "rear", price: 3950, unit: "Rear axle set", stock: 99, fits: ["toyota-yaris-13@2020-2023"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-yaris-2020-2023-asuki-rare-brake-shoe-2010-8294150", checked: "2026-10-04",
+    specs: [["Brand","Asuki"],["Part no.","2010"],["Listed fitment","Toyota Yaris 1.3L 2NR-FE (2020–2023)"],["Pack","Rear axle set"],["Source listing","PakWheels #8294150"]],
+    desc: "Aftermarket brake shoe from Asuki, listed for Toyota Yaris 1.3L 2NR-FE (2020–2023). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-018", sku: "MIS-TH-180", oem: null, brand: "Mishimoto", grade: "performance", title: "Mishimoto Racing Thermostat 160 °F", category: "cooling", sub: "Thermostats", art: "thermostat", position: "na", price: 12599, unit: "Each", rating: 4.4, reviews: 58, stock: 0, fits: ["honda-civic-15t","mg-hs"],
-    specs: [["Opening temp","160 °F / 71 °C"],["Seal","Viton gasket"]],
-    desc: "Lower-temperature thermostat for tuned turbo engines. Expect slower warm-up in northern winters."
+    id: "pw-13521385", sku: "PW-13521385", oem: null, brand: "Unbranded", grade: "performance", title: "Front Brake Pads for Toyota Hilux Revo / Fortuner", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 4500, unit: "Front axle set", stock: 99, fits: ["toyota-fortuner-27","toyota-fortuner-28","toyota-hilux-28"], src: "https://www.pakwheels.com/accessories-spare-parts/front-brake-pads-for-toyota-hilux-revo-fortuner-13521385", checked: "2026-10-04",
+    specs: [["Brand","Unbranded"],["Listed fitment","Toyota Fortuner 2.7L 2TR-FE petrol (2016–2026); Toyota Fortuner 2.8L 1GD-FTV diesel (2016–2026); Toyota Hilux Revo 2.8L 1GD-FTV diesel (2016–2026)"],["Pack","Front axle set"],["Source listing","PakWheels #13521385"]],
+    desc: "Aftermarket brake pad from Unbranded, listed for Toyota Fortuner 2.7L 2TR-FE petrol (2016–2026); Toyota Fortuner 2.8L 1GD-FTV diesel (2016–2026); Toyota Hilux Revo 2.8L 1GD-FTV diesel (2016–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-019", sku: "ODY-94R-850", oem: null, brand: "Odyssey", grade: "performance", title: "Odyssey Performance AGM Battery Group 94R", category: "electrical", sub: "Batteries", art: "battery", position: "na", price: 69999, unit: "Each + Rs 6,200 core", rating: 4.8, reviews: 377, stock: 9, core: 6200, fits: ["toyota-fortuner-28","toyota-hilux-28","toyota-fortuner-27","kia-sportage","hyundai-tucson"],
-    specs: [["Group","94R / H7"],["CCA","850 A"],["Reserve capacity","140 min"],["Chemistry","AGM"]],
-    desc: "Heavy-duty AGM battery for pickups and SUVs with high electrical load. A refundable Rs 6,200 core charge applies until the old battery is returned."
+    id: "pw-10873199", sku: "PW-10873199", oem: null, brand: "Nissin Japan", grade: "performance", title: "Honda BR-V Front Disc Pad", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 9500, unit: "Front axle set", stock: 99, fits: ["honda-brv"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-brv-front-disc-pad-nissin-japan-10873199", checked: "2026-10-04",
+    specs: [["Brand","Nissin Japan"],["Listed fitment","Honda BR-V 1.5L L15Z i-VTEC (2017–2026)"],["Pack","Front axle set"],["Source listing","PakWheels #10873199"]],
+    desc: "Aftermarket brake pad from Nissin Japan, listed for Honda BR-V 1.5L L15Z i-VTEC (2017–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-020", sku: "DEN-210-0812", oem: "27060-0L050", brand: "Denso", grade: "oem", title: "Denso Remanufactured Alternator 130 A", category: "electrical", sub: "Alternators", art: "alternator", position: "na", price: 80099, unit: "Each + Rs 12,600 core", rating: 4.6, reviews: 92, stock: 5, core: 12600, fits: ["toyota-fortuner-28","toyota-hilux-28"],
-    specs: [["Output","130 A"],["Voltage","12 V"],["Pulley","6-groove clutch"],["Condition","Remanufactured, tested"]],
-    desc: "Fully remanufactured to OE spec and load-tested before shipping."
+    id: "pw-10934552", sku: "PW-10934552", oem: null, brand: "MG OEM", grade: "oem", title: "MG HS Front Disc Pad OEM", category: "brakes", sub: "Brake pads", art: "pads", position: "front", price: 18000, unit: "Front axle set", stock: 99, fits: ["mg-hs"], src: "https://www.pakwheels.com/accessories-spare-parts/mg-hs-front-disc-pad-oem-10934552", checked: "2026-10-04",
+    specs: [["Brand","MG OEM"],["Listed fitment","MG HS 1.5L Turbo 15E4E (2021–2026)"],["Pack","Front axle set"],["Source listing","PakWheels #10934552"]],
+    desc: "Genuine / OEM brake pad from MG OEM, listed for MG HS 1.5L Turbo 15E4E (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-021", sku: "BOS-15734", oem: null, brand: "Bosch", grade: "oem", title: "Bosch Premium Oxygen Sensor (Upstream)", category: "electrical", sub: "Sensors", art: "sensor", position: "na", price: 22399, unit: "Each", rating: 4.7, reviews: 211, stock: 22, shipsToday: true, fits: ["toyota-corolla-16","toyota-yaris-13","honda-city-15","honda-civic-18"],
-    specs: [["Type","Air/fuel ratio, wideband"],["Wires","4"],["Thread","M18 × 1.5"]],
-    desc: "Sensor 1, before the catalytic converter. Pre-applied anti-seize on the threads."
+    id: "pw-10934568", sku: "PW-10934568", oem: null, brand: "GM Max", grade: "performance", title: "MG HS Rear Disc Pad", category: "brakes", sub: "Brake pads", art: "pads", position: "rear", price: 5000, unit: "Rear axle set", stock: 99, fits: ["mg-hs"], src: "https://www.pakwheels.com/accessories-spare-parts/mg-hs-rear-disc-pad-gm-max-10934568", checked: "2026-10-04",
+    specs: [["Brand","GM Max"],["Listed fitment","MG HS 1.5L Turbo 15E4E (2021–2026)"],["Pack","Rear axle set"],["Source listing","PakWheels #10934568"]],
+    desc: "Aftermarket brake pad from GM Max, listed for MG HS 1.5L Turbo 15E4E (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-022", sku: "BORLA-140735", oem: null, brand: "Borla", grade: "performance", title: "Borla S-Type Cat-Back Exhaust System", category: "exhaust", sub: "Cat-Back", art: "exhaust", position: "na", price: 416899, was: 447699, unit: "Complete system", rating: 4.9, reviews: 37, stock: 2, fits: ["honda-civic-15t"],
-    specs: [["Tubing","2.5 in T-304 stainless"],["Tips","4.0 in polished"],["Sound","Moderate, no drone at cruise"]],
-    desc: "Mandrel-bent cat-back with a straight-through muffler. Bolts to factory hangers."
+    id: "pw-11367148", sku: "PW-11367148", oem: null, brand: "Toyota Genuine", grade: "oem", title: "Toyota Genuine Oil Filter — Corolla & Vitz", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 2249, was: 2399, unit: "Each", stock: 99, fits: ["toyota-corolla-16@2015-2026","toyota-corolla-18@2015-2026","toyota-yaris-13"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-genuine-oil-filter-for-corolla-and-vitz-11367148", checked: "2026-10-04",
+    specs: [["Brand","Toyota Genuine"],["Listed fitment","Toyota Corolla 1.6L 1ZR-FE (2015–2026); Toyota Corolla 1.8L 2ZR-FE (2015–2026); Toyota Yaris 1.3L 2NR-FE (2020–2026)"],["Pack","Each"],["Source listing","PakWheels #11367148"]],
+    desc: "Genuine / OEM oil filter from Toyota Genuine, listed for Toyota Corolla 1.6L 1ZR-FE (2015–2026); Toyota Corolla 1.8L 2ZR-FE (2015–2026); Toyota Yaris 1.3L 2NR-FE (2020–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-023", sku: "WAL-50-0141", oem: null, brand: "Walker", grade: "oem", title: "Walker Exhaust Gasket & Hardware Kit", category: "exhaust", sub: "Gaskets & Hardware", art: "gasket", position: "na", price: 3599, unit: "Kit", rating: 4.3, reviews: 88, stock: 64, shipsToday: true, fits: ["universal"],
-    specs: [["Includes","2 donut gaskets, 4 spring bolts"],["Flange","2.25 – 2.5 in"]],
-    desc: "Universal fitment — measure your flange diameter before ordering."
+    id: "pw-13186898", sku: "04152-YZZA6", oem: null, brand: "OEM-spec replacement", grade: "performance", title: "Toyota Engine Oil Filter Element 04152-YZZA6", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 1700, was: 2000, unit: "Each", stock: 99, fits: ["toyota-corolla-16@2015-2026","toyota-corolla-18@2015-2026"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-engine-oil-filter-element-04152-yzza6-high-quality-replacement-oil-filter-for-corolla-vitz-13186898", checked: "2026-10-04",
+    specs: [["Brand","OEM-spec replacement"],["Part no.","04152-YZZA6"],["Listed fitment","Toyota Corolla 1.6L 1ZR-FE (2015–2026); Toyota Corolla 1.8L 2ZR-FE (2015–2026)"],["Pack","Each"],["Source listing","PakWheels #13186898"]],
+    desc: "Aftermarket oil filter from OEM-spec replacement, listed for Toyota Corolla 1.6L 1ZR-FE (2015–2026); Toyota Corolla 1.8L 2ZR-FE (2015–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
   },
   {
-    id: "p-024", sku: "WAG-QC1234", oem: null, brand: "Wagner", grade: "oem", title: "Wagner QuickStop Semi-Metallic Front Brake Pads", category: "brakes", sub: "Pads", art: "pads", position: "front", price: 9799, unit: "Front axle", rating: 4.4, reviews: 156, stock: 37, shipsToday: true, fits: ["suzuki-mehran","suzuki-alto","suzuki-cultus","suzuki-wagonr","suzuki-swift","kia-picanto"],
-    specs: [["Compound","Semi-metallic"],["Hardware","Abutment clips included"],["Use","Daily / towing"]],
-    desc: "Budget-friendly pad with strong cold bite — a sensible pick for daily city driving in small hatchbacks."
+    id: "pw-9949526", sku: "PW-9949526", oem: null, brand: "Toyota Genuine", grade: "oem", title: "Toyota Genuine Oil Filter — Revo, Fortuner, Prado", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 2550, unit: "Each", stock: 99, fits: ["toyota-fortuner-27","toyota-fortuner-28","toyota-hilux-28"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-genuine-oil-filter-for-revo-fortuner-prado-9949526", checked: "2026-10-04",
+    specs: [["Brand","Toyota Genuine"],["Listed fitment","Toyota Fortuner 2.7L 2TR-FE petrol (2016–2026); Toyota Fortuner 2.8L 1GD-FTV diesel (2016–2026); Toyota Hilux Revo 2.8L 1GD-FTV diesel (2016–2026)"],["Pack","Each"],["Source listing","PakWheels #9949526"]],
+    desc: "Genuine / OEM oil filter from Toyota Genuine, listed for Toyota Fortuner 2.7L 2TR-FE petrol (2016–2026); Toyota Fortuner 2.8L 1GD-FTV diesel (2016–2026); Toyota Hilux Revo 2.8L 1GD-FTV diesel (2016–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-11394096", sku: "PW-11394096", oem: null, brand: "VIC", grade: "performance", title: "Toyota Fortuner 2016-2025 Oil Filter — Made in Japan", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 1949, unit: "Each", stock: 99, fits: ["toyota-fortuner-27@2016-2025","toyota-fortuner-28@2016-2025"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-fortuner-2016-2025-vic-oil-filter-made-in-japan-11394096", checked: "2026-10-04",
+    specs: [["Brand","VIC"],["Listed fitment","Toyota Fortuner 2.7L 2TR-FE petrol (2016–2025); Toyota Fortuner 2.8L 1GD-FTV diesel (2016–2025)"],["Pack","Each"],["Source listing","PakWheels #11394096"]],
+    desc: "Aftermarket oil filter from VIC, listed for Toyota Fortuner 2.7L 2TR-FE petrol (2016–2025); Toyota Fortuner 2.8L 1GD-FTV diesel (2016–2025). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-12518942", sku: "PW-12518942", oem: null, brand: "Honda Genuine", grade: "oem", title: "Genuine Oil Filter — Honda City / Civic / BR-V", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 2245, unit: "Each", stock: 99, fits: ["honda-city-12@2021-2026","honda-city-15@2021-2026","honda-civic-18","honda-civic-15t","honda-brv"], src: "https://www.pakwheels.com/accessories-spare-parts/automotive-oil-filter-genuine-element-type-honda-city-civic-brv-vezel-hrv-12518942", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Listed fitment","Honda City 1.2L L12B i-VTEC (2021–2026); Honda City 1.5L L15Z (2021–2026); Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2026); Honda BR-V 1.5L L15Z i-VTEC (2017–2026)"],["Pack","Each"],["Source listing","PakWheels #12518942"]],
+    desc: "Genuine / OEM oil filter from Honda Genuine, listed for Honda City 1.2L L12B i-VTEC (2021–2026); Honda City 1.5L L15Z (2021–2026); Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2026); Honda BR-V 1.5L L15Z i-VTEC (2017–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10184464", sku: "PW-10184464", oem: null, brand: "Honda Genuine", grade: "oem", title: "Honda Civic 2007-2022 Oil Filter Genuine", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 1500, was: 1800, unit: "Each", stock: 99, fits: ["honda-civic-18@2016-2021","honda-civic-15t@2016-2022"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-civic-all-oil-filter-genuine-10184464", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Listed fitment","Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2022)"],["Pack","Each"],["Source listing","PakWheels #10184464"]],
+    desc: "Genuine / OEM oil filter from Honda Genuine, listed for Honda Civic 1.8L R18Z i-VTEC (2016–2021); Honda Civic 1.5L L15B7 VTEC Turbo (2016–2022). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-13048428", sku: "PW-13048428", oem: null, brand: "Unbranded", grade: "performance", title: "Honda City Oil Filter 2022-2026", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 1199, unit: "Each", stock: 99, fits: ["honda-city-12@2022-2026","honda-city-15@2022-2026"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-city-oil-filter-2022-2026-13048428", checked: "2026-10-04",
+    specs: [["Brand","Unbranded"],["Listed fitment","Honda City 1.2L L12B i-VTEC (2022–2026); Honda City 1.5L L15Z (2022–2026)"],["Pack","Each"],["Source listing","PakWheels #13048428"]],
+    desc: "Aftermarket oil filter from Unbranded, listed for Honda City 1.2L L12B i-VTEC (2022–2026); Honda City 1.5L L15Z (2022–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-8196374", sku: "PW-8196374", oem: null, brand: "Suzuki Genuine", grade: "oem", title: "Suzuki Alto 660cc Oil Filter — Suzuki Genuine", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 2450, unit: "Each", stock: 99, fits: ["suzuki-alto@2019-2023"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-alto-660-cc-2019-2023-oil-filter-suzuki-genuine-165-8196374", checked: "2026-10-04",
+    specs: [["Brand","Suzuki Genuine"],["Listed fitment","Suzuki Alto 0.66L R06A (2019–2023)"],["Pack","Each"],["Source listing","PakWheels #8196374"]],
+    desc: "Genuine / OEM oil filter from Suzuki Genuine, listed for Suzuki Alto 0.66L R06A (2019–2023). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-8196389", sku: "16510B67LA0N000", oem: "16510B67LA0N000", brand: "Suzuki Genuine", grade: "oem", title: "Suzuki Wagon R 2014-2023 Oil Filter — Suzuki Genuine", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 2450, unit: "Each", stock: 99, fits: ["suzuki-wagonr@2014-2023"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-wagon-r-2014-2023-suzuki-genuine-oil-filter-16510b-8196389", checked: "2026-10-04",
+    specs: [["Brand","Suzuki Genuine"],["Part no.","16510B67LA0N000"],["Listed fitment","Suzuki Wagon R 1.0L K10B (2014–2023)"],["Pack","Each"],["Source listing","PakWheels #8196389"]],
+    desc: "Genuine / OEM oil filter from Suzuki Genuine, listed for Suzuki Wagon R 1.0L K10B (2014–2023). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10922301", sku: "16510-58M00", oem: null, brand: "GPT", grade: "performance", title: "GPT Oil Filter 16510-58M00 — Cultus / Wagon R", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 899, was: 1599, unit: "Each", stock: 99, fits: ["suzuki-cultus","suzuki-wagonr"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-alto-cultuswagon-r-swiftcamber-pickup-old-oil-filter-gpt-16510-58m00-gto-932-10922301", checked: "2026-10-04",
+    specs: [["Brand","GPT"],["Part no.","16510-58M00"],["Listed fitment","Suzuki Cultus 1.0L K10B (2017–2026); Suzuki Wagon R 1.0L K10B (2014–2026)"],["Pack","Each"],["Source listing","PakWheels #10922301"]],
+    desc: "Aftermarket oil filter from GPT, listed for Suzuki Cultus 1.0L K10B (2017–2026); Suzuki Wagon R 1.0L K10B (2014–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-13014860", sku: "PW-13014860", oem: null, brand: "Unbranded", grade: "performance", title: "Suzuki Swift New Oil Filter (2022-2026)", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 675, was: 750, unit: "Each", stock: 99, fits: ["suzuki-swift@2022-2026"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-swift-new-oil-filter-2022-2026-13014860", checked: "2026-10-04",
+    specs: [["Brand","Unbranded"],["Listed fitment","Suzuki Swift 1.2L K12M (2022–2026)"],["Pack","Each"],["Source listing","PakWheels #13014860"]],
+    desc: "Aftermarket oil filter from Unbranded, listed for Suzuki Swift 1.2L K12M (2022–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-13048400", sku: "PW-13048400", oem: null, brand: "Unbranded", grade: "performance", title: "Kia Sportage Oil Filter", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 2499, unit: "Each", stock: 99, fits: ["kia-sportage"], src: "https://www.pakwheels.com/accessories-spare-parts/kia-sportage-oil-filter-13048400", checked: "2026-10-04",
+    specs: [["Brand","Unbranded"],["Listed fitment","KIA Sportage 2.0L Nu MPi (2019–2026)"],["Pack","Each"],["Source listing","PakWheels #13048400"]],
+    desc: "Aftermarket oil filter from Unbranded, listed for KIA Sportage 2.0L Nu MPi (2019–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10016915", sku: "PW-10016915", oem: null, brand: "Hyundai Genuine", grade: "oem", title: "Hyundai Tucson Genuine Oil Filter", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 2400, unit: "Each", stock: 99, fits: ["hyundai-tucson"], src: "https://www.pakwheels.com/accessories-spare-parts/hyundai-tucson-genuine-oil-filter-10016915", checked: "2026-10-04",
+    specs: [["Brand","Hyundai Genuine"],["Listed fitment","Hyundai Tucson 2.0L Nu MPi (2020–2026)"],["Pack","Each"],["Source listing","PakWheels #10016915"]],
+    desc: "Genuine / OEM oil filter from Hyundai Genuine, listed for Hyundai Tucson 2.0L Nu MPi (2020–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-11401806", sku: "PW-11401806", oem: null, brand: "VIC", grade: "performance", title: "KIA Picanto 2019-2025 Oil Filter — Made in Japan", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 1950, unit: "Each", stock: 99, fits: ["kia-picanto@2019-2025"], src: "https://www.pakwheels.com/accessories-spare-parts/kia-picanto-2019-2025-vic-oil-filter-made-in-japan-11401806", checked: "2026-10-04",
+    specs: [["Brand","VIC"],["Listed fitment","KIA Picanto 1.0L Kappa (2019–2025)"],["Pack","Each"],["Source listing","PakWheels #11401806"]],
+    desc: "Aftermarket oil filter from VIC, listed for KIA Picanto 1.0L Kappa (2019–2025). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-9084068", sku: "PW-9084068", oem: null, brand: "Guard Filters", grade: "performance", title: "Changan Alsvin Oil Filter", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 2150, unit: "Each", stock: 99, fits: ["changan-alsvin"], src: "https://www.pakwheels.com/accessories-spare-parts/changan-alsvin-oil-filter-guard-filters-9084068", checked: "2026-10-04",
+    specs: [["Brand","Guard Filters"],["Listed fitment","Changan Alsvin 1.5L JL473Q (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #9084068"]],
+    desc: "Aftermarket oil filter from Guard Filters, listed for Changan Alsvin 1.5L JL473Q (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-9084058", sku: "PW-9084058", oem: null, brand: "Guard Filters", grade: "performance", title: "MG HS Oil Filter", category: "filters", sub: "Oil filters", art: "oilfilter", position: "na", price: 1799, unit: "Each", stock: 99, fits: ["mg-hs"], src: "https://www.pakwheels.com/accessories-spare-parts/mg-hs-oil-filter-guard-oem-filters-9084058", checked: "2026-10-04",
+    specs: [["Brand","Guard Filters"],["Listed fitment","MG HS 1.5L Turbo 15E4E (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #9084058"]],
+    desc: "Aftermarket oil filter from Guard Filters, listed for MG HS 1.5L Turbo 15E4E (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10016730", sku: "17801-0M020", oem: "17801-0M020", brand: "Toyota Genuine", grade: "oem", title: "Toyota Corolla 2009-2024 Genuine Air Filter", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 5800, unit: "Each", stock: 99, fits: ["toyota-corolla-16@2015-2024","toyota-corolla-18@2015-2024"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-corolla-2009-2024-genuine-air-filter-17801-0m020-10016730", checked: "2026-10-04",
+    specs: [["Brand","Toyota Genuine"],["Part no.","17801-0M020"],["Listed fitment","Toyota Corolla 1.6L 1ZR-FE (2015–2024); Toyota Corolla 1.8L 2ZR-FE (2015–2024)"],["Pack","Each"],["Source listing","PakWheels #10016730"]],
+    desc: "Genuine / OEM air filter from Toyota Genuine, listed for Toyota Corolla 1.6L 1ZR-FE (2015–2024); Toyota Corolla 1.8L 2ZR-FE (2015–2024). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10894374", sku: "17801-0M020", oem: null, brand: "GPT", grade: "performance", title: "GPT Air Filter 17801-0M020 — Corolla 2009-2026", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 1199, was: 2000, unit: "Each", stock: 99, fits: ["toyota-corolla-16@2015-2026","toyota-corolla-18@2015-2026"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-corolla-new-2009-2024-air-filter-gpt-17801-0m020-gpta-21013-10894374", checked: "2026-10-04",
+    specs: [["Brand","GPT"],["Part no.","17801-0M020"],["Listed fitment","Toyota Corolla 1.6L 1ZR-FE (2015–2026); Toyota Corolla 1.8L 2ZR-FE (2015–2026)"],["Pack","Each"],["Source listing","PakWheels #10894374"]],
+    desc: "Aftermarket air filter from GPT, listed for Toyota Corolla 1.6L 1ZR-FE (2015–2026); Toyota Corolla 1.8L 2ZR-FE (2015–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-13186951", sku: "17801-0L040", oem: null, brand: "Imported (OEM-spec)", grade: "performance", title: "Fortuner / Hilux Revo Engine Air Filter 17801-0L040", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 3229, was: 3450, unit: "Each", stock: 99, fits: ["toyota-fortuner-27","toyota-fortuner-28","toyota-hilux-28"], src: "https://www.pakwheels.com/accessories-spare-parts/imported-toyota-fortuner-hilux-and-revo-engine-air-filter-oem-17801-0l040-premium-high-performanc-13186951", checked: "2026-10-04",
+    specs: [["Brand","Imported (OEM-spec)"],["Part no.","17801-0L040"],["Listed fitment","Toyota Fortuner 2.7L 2TR-FE petrol (2016–2026); Toyota Fortuner 2.8L 1GD-FTV diesel (2016–2026); Toyota Hilux Revo 2.8L 1GD-FTV diesel (2016–2026)"],["Pack","Each"],["Source listing","PakWheels #13186951"]],
+    desc: "Aftermarket air filter from Imported (OEM-spec), listed for Toyota Fortuner 2.7L 2TR-FE petrol (2016–2026); Toyota Fortuner 2.8L 1GD-FTV diesel (2016–2026); Toyota Hilux Revo 2.8L 1GD-FTV diesel (2016–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10452508", sku: "PW-10452508", oem: null, brand: "Honda Genuine", grade: "oem", title: "Honda Civic X 1.5 Turbo Air Filter Genuine", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 5000, unit: "Each", stock: 99, fits: ["honda-civic-15t@2016-2021"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-civic-x-15-air-filter-genuine-10452508", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Listed fitment","Honda Civic 1.5L L15B7 VTEC Turbo (2016–2021)"],["Pack","Each"],["Source listing","PakWheels #10452508"]],
+    desc: "Genuine / OEM air filter from Honda Genuine, listed for Honda Civic 1.5L L15B7 VTEC Turbo (2016–2021). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-9944505", sku: "PW-9944505", oem: null, brand: "Honda Genuine", grade: "oem", title: "Honda Civic 1.8 2017-2021 Genuine Air Filter", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 6500, unit: "Each", stock: 99, fits: ["honda-civic-18@2017-2021"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-civic-2017-2021-genuine-air-filter-9944505", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Listed fitment","Honda Civic 1.8L R18Z i-VTEC (2017–2021)"],["Pack","Each"],["Source listing","PakWheels #9944505"]],
+    desc: "Genuine / OEM air filter from Honda Genuine, listed for Honda Civic 1.8L R18Z i-VTEC (2017–2021). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-9944590", sku: "PW-9944590", oem: null, brand: "Honda Genuine", grade: "oem", title: "Honda Civic 2022-2024 Genuine Air Filter", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 5500, unit: "Each", stock: 99, fits: ["honda-civic-15t@2022-2024"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-civic-2022-2024-genuine-air-filter-9944590", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Listed fitment","Honda Civic 1.5L L15B7 VTEC Turbo (2022–2024)"],["Pack","Each"],["Source listing","PakWheels #9944590"]],
+    desc: "Genuine / OEM air filter from Honda Genuine, listed for Honda Civic 1.5L L15B7 VTEC Turbo (2022–2024). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-9944635", sku: "PW-9944635", oem: null, brand: "Honda Genuine", grade: "oem", title: "Honda BR-V 2017-2024 Genuine Air Filter", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 5500, unit: "Each", stock: 99, fits: ["honda-brv@2017-2024"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-brv-2017-2024-genuine-air-filter-9944635", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Listed fitment","Honda BR-V 1.5L L15Z i-VTEC (2017–2024)"],["Pack","Each"],["Source listing","PakWheels #9944635"]],
+    desc: "Genuine / OEM air filter from Honda Genuine, listed for Honda BR-V 1.5L L15Z i-VTEC (2017–2024). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-5632599", sku: "PW-5632599", oem: null, brand: "KIA Genuine", grade: "oem", title: "Kia Picanto Genuine Air Filter", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 2901, was: 3000, unit: "Each", stock: 99, fits: ["kia-picanto"], src: "https://www.pakwheels.com/accessories-spare-parts/kia-picanto-genuine-air-filter-5632599", checked: "2026-10-04",
+    specs: [["Brand","KIA Genuine"],["Listed fitment","KIA Picanto 1.0L Kappa (2019–2026)"],["Pack","Each"],["Source listing","PakWheels #5632599"]],
+    desc: "Genuine / OEM air filter from KIA Genuine, listed for KIA Picanto 1.0L Kappa (2019–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10016858", sku: "PW-10016858", oem: null, brand: "Hyundai Genuine", grade: "oem", title: "Hyundai Tucson Genuine Air Filter", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 4950, unit: "Each", stock: 99, fits: ["hyundai-tucson"], src: "https://www.pakwheels.com/accessories-spare-parts/hyundai-tucson-genuine-air-filter-10016858", checked: "2026-10-04",
+    specs: [["Brand","Hyundai Genuine"],["Listed fitment","Hyundai Tucson 2.0L Nu MPi (2020–2026)"],["Pack","Each"],["Source listing","PakWheels #10016858"]],
+    desc: "Genuine / OEM air filter from Hyundai Genuine, listed for Hyundai Tucson 2.0L Nu MPi (2020–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-12877681", sku: "PW-12877681", oem: null, brand: "Changan OEM", grade: "oem", title: "Changan Alsvin Air Filter OEM", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 5399, was: 5999, unit: "Each", stock: 99, fits: ["changan-alsvin"], src: "https://www.pakwheels.com/accessories-spare-parts/changan-alsvin-air-filter-oem-new-12877681", checked: "2026-10-04",
+    specs: [["Brand","Changan OEM"],["Listed fitment","Changan Alsvin 1.5L JL473Q (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #12877681"]],
+    desc: "Genuine / OEM air filter from Changan OEM, listed for Changan Alsvin 1.5L JL473Q (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10929023", sku: "PW-10929023", oem: null, brand: "MG OEM", grade: "oem", title: "MG HS Air Filter OEM", category: "filters", sub: "Air filters", art: "airfilter", position: "na", price: 2500, unit: "Each", stock: 99, fits: ["mg-hs"], src: "https://www.pakwheels.com/accessories-spare-parts/mg-hs-air-filter-oem-10929023", checked: "2026-10-04",
+    specs: [["Brand","MG OEM"],["Listed fitment","MG HS 1.5L Turbo 15E4E (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #10929023"]],
+    desc: "Genuine / OEM air filter from MG OEM, listed for MG HS 1.5L Turbo 15E4E (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-8074614", sku: "AC-101", oem: null, brand: "Leppon", grade: "performance", title: "Leppon AC Cabin Filter AC-101 — Yaris 2020-2023", category: "filters", sub: "Cabin filters", art: "airfilter", position: "na", price: 1649, unit: "Each", stock: 99, fits: ["toyota-yaris-13@2020-2023"], src: "https://www.pakwheels.com/accessories-spare-parts/toyota-yaris-2020-2023-leppon-ac-cabin-filter-ac-101-8074614", checked: "2026-10-04",
+    specs: [["Brand","Leppon"],["Part no.","AC-101"],["Listed fitment","Toyota Yaris 1.3L 2NR-FE (2020–2023)"],["Pack","Each"],["Source listing","PakWheels #8074614"]],
+    desc: "Aftermarket cabin filter from Leppon, listed for Toyota Yaris 1.3L 2NR-FE (2020–2023). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-11616486", sku: "PW-11616486", oem: null, brand: "Unbranded", grade: "performance", title: "Suzuki Alto 660 Cabin AC Filter", category: "filters", sub: "Cabin filters", art: "airfilter", position: "na", price: 1999, was: 2500, unit: "Each", stock: 99, fits: ["suzuki-alto"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-alto-660-cabin-filter-ac-filter-11616486", checked: "2026-10-04",
+    specs: [["Brand","Unbranded"],["Listed fitment","Suzuki Alto 0.66L R06A (2019–2026)"],["Pack","Each"],["Source listing","PakWheels #11616486"]],
+    desc: "Aftermarket cabin filter from Unbranded, listed for Suzuki Alto 0.66L R06A (2019–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-13034890", sku: "PW-13034890", oem: null, brand: "Unbranded", grade: "performance", title: "Hyundai Tucson 2020-2025 Cabin Filter — Carbon Active", category: "filters", sub: "Cabin filters", art: "airfilter", position: "na", price: 2250, unit: "Each", stock: 99, fits: ["hyundai-tucson@2020-2025"], src: "https://www.pakwheels.com/accessories-spare-parts/hyundai-tucson-2020-2025-cabin-filter-carbon-active-13034890", checked: "2026-10-04",
+    specs: [["Brand","Unbranded"],["Listed fitment","Hyundai Tucson 2.0L Nu MPi (2020–2025)"],["Pack","Each"],["Source listing","PakWheels #13034890"]],
+    desc: "Aftermarket cabin filter from Unbranded, listed for Hyundai Tucson 2.0L Nu MPi (2020–2025). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-12876864", sku: "PW-12876864", oem: null, brand: "Changan OEM", grade: "oem", title: "Changan Alsvin AC Filter Genuine", category: "filters", sub: "Cabin filters", art: "airfilter", position: "na", price: 4199, was: 5999, unit: "Each", stock: 99, fits: ["changan-alsvin"], src: "https://www.pakwheels.com/accessories-spare-parts/changan-alsvin-ac-filter-genuine-new-12876864", checked: "2026-10-04",
+    specs: [["Brand","Changan OEM"],["Listed fitment","Changan Alsvin 1.5L JL473Q (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #12876864"]],
+    desc: "Genuine / OEM cabin filter from Changan OEM, listed for Changan Alsvin 1.5L JL473Q (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10008506", sku: "PW-10008506", oem: null, brand: "Toyota Genuine", grade: "oem", title: "Toyota Taglon Supreme 0W-20 Engine Oil 4.2L", category: "oils", sub: "Engine oil", art: "fluid", position: "na", price: 10000, unit: "4.2 L", stock: 99, fits: ["universal"], src: "https://www.pakwheels.com/accessories-spare-parts/engine-oil-toyota-taglon-supreme-0w20-genuine-42ltr-10008506", checked: "2026-10-04",
+    specs: [["Brand","Toyota Genuine"],["Listed fitment","Universal — match the spec to your owner’s manual"],["Pack","4.2 L"],["Source listing","PakWheels #10008506"]],
+    desc: "Toyota Taglon Supreme 0W-20 Engine Oil 4.2L from Toyota Genuine. Not vehicle-specific — check the grade or spec your owner’s manual calls for before buying. Price as listed on PakWheels Auto Store."
+  },
+  {
+    id: "pw-8199297", sku: "PW-8199297", oem: null, brand: "Honda Genuine", grade: "oem", title: "Honda Genuine 0W-20 SP Engine Oil 3.7L", category: "oils", sub: "Engine oil", art: "fluid", position: "na", price: 10120, unit: "3.7 L", stock: 99, fits: ["universal"], src: "https://www.pakwheels.com/accessories-spare-parts/honda-genuine-0w20-sp-engine-oil-37-litre-8199297", checked: "2026-10-04",
+    specs: [["Brand","Honda Genuine"],["Listed fitment","Universal — match the spec to your owner’s manual"],["Pack","3.7 L"],["Source listing","PakWheels #8199297"]],
+    desc: "Honda Genuine 0W-20 SP Engine Oil 3.7L from Honda Genuine. Not vehicle-specific — check the grade or spec your owner’s manual calls for before buying. Price as listed on PakWheels Auto Store."
+  },
+  {
+    id: "pw-8901846", sku: "PW-8901846", oem: null, brand: "Suzuki Genuine", grade: "oem", title: "Suzuki Ecstar F9000 0W-20 Engine Oil 3.1L", category: "oils", sub: "Engine oil", art: "fluid", position: "na", price: 6950, unit: "3.1 L", stock: 99, fits: ["universal"], src: "https://www.pakwheels.com/accessories-spare-parts/suzuki-genuine-oil-super-efficient-0w20-sn-engine-oil-sgo-3-litre-8901846", checked: "2026-10-04",
+    specs: [["Brand","Suzuki Genuine"],["Listed fitment","Universal — match the spec to your owner’s manual"],["Pack","3.1 L"],["Source listing","PakWheels #8901846"]],
+    desc: "Suzuki Ecstar F9000 0W-20 Engine Oil 3.1L from Suzuki Genuine. Not vehicle-specific — check the grade or spec your owner’s manual calls for before buying. Price as listed on PakWheels Auto Store."
+  },
+  {
+    id: "pw-10702418", sku: "PW-10702418", oem: null, brand: "Valvoline", grade: "performance", title: "Valvoline 0W-20 Engine Oil 4L", category: "oils", sub: "Engine oil", art: "fluid", position: "na", price: 10700, unit: "4 L", stock: 99, fits: ["universal"], src: "https://www.pakwheels.com/accessories-spare-parts/engine-oil-valvoline-0w20-4ltr-10702418", checked: "2026-10-04",
+    specs: [["Brand","Valvoline"],["Listed fitment","Universal — match the spec to your owner’s manual"],["Pack","4 L"],["Source listing","PakWheels #10702418"]],
+    desc: "Valvoline 0W-20 Engine Oil 4L from Valvoline. Not vehicle-specific — check the grade or spec your owner’s manual calls for before buying. Price as listed on PakWheels Auto Store."
+  },
+  {
+    id: "pw-12231935", sku: "PW-12231935", oem: null, brand: "Flamingo", grade: "performance", title: "Flamingo Radiator Coolant 5L — Green", category: "oils", sub: "Coolant", art: "coolant", position: "na", price: 2499, was: 3499, unit: "5 L", stock: 99, fits: ["universal"], src: "https://www.pakwheels.com/accessories-spare-parts/flamingo-coolant-5l-green-12231935", checked: "2026-10-04",
+    specs: [["Brand","Flamingo"],["Listed fitment","Universal — match the spec to your owner’s manual"],["Pack","5 L"],["Source listing","PakWheels #12231935"]],
+    desc: "Flamingo Radiator Coolant 5L — Green from Flamingo. Not vehicle-specific — check the grade or spec your owner’s manual calls for before buying. Price as listed on PakWheels Auto Store."
+  },
+  {
+    id: "pw-5970629", sku: "PW-5970629", oem: null, brand: "NASA", grade: "performance", title: "NASA Radiator Coolant Super Red 1L", category: "oils", sub: "Coolant", art: "coolant", position: "na", price: 699, was: 999, unit: "1 L", stock: 99, fits: ["universal"], src: "https://www.pakwheels.com/accessories-spare-parts/nasa-radiator-coolant-super-quality-red-1-litre-5970629", checked: "2026-10-04",
+    specs: [["Brand","NASA"],["Listed fitment","Universal — match the spec to your owner’s manual"],["Pack","1 L"],["Source listing","PakWheels #5970629"]],
+    desc: "NASA Radiator Coolant Super Red 1L from NASA. Not vehicle-specific — check the grade or spec your owner’s manual calls for before buying. Price as listed on PakWheels Auto Store."
+  },
+  {
+    id: "pw-12999923", sku: "PW-12999923", oem: null, brand: "MG OEM", grade: "oem", title: "MG HS Spark Plug Genuine", category: "engine", sub: "Spark plugs", art: "plug", position: "na", price: 5000, unit: "Each", stock: 99, fits: ["mg-hs"], src: "https://www.pakwheels.com/accessories-spare-parts/mg-hs-spark-plug-geniune-12999923", checked: "2026-10-04",
+    specs: [["Brand","MG OEM"],["Listed fitment","MG HS 1.5L Turbo 15E4E (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #12999923"]],
+    desc: "Genuine / OEM spark plug from MG OEM, listed for MG HS 1.5L Turbo 15E4E (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10444501", sku: "PW-10444501", oem: null, brand: "Unbranded", grade: "performance", title: "Changan Alsvin Belt Tensioner", category: "engine", sub: "Belts & tensioners", art: "belt", position: "na", price: 12000, was: 12999, unit: "Each", stock: 99, fits: ["changan-alsvin"], src: "https://www.pakwheels.com/accessories-spare-parts/changan-alsvin-tensioner-10444501", checked: "2026-10-04",
+    specs: [["Brand","Unbranded"],["Listed fitment","Changan Alsvin 1.5L JL473Q (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #10444501"]],
+    desc: "Aftermarket belts & tensioner from Unbranded, listed for Changan Alsvin 1.5L JL473Q (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-11755610", sku: "PW-11755610", oem: null, brand: "Koyorad", grade: "performance", title: "Koyorad Radiator for Honda BR-V", category: "cooling", sub: "Radiators", art: "radiator", position: "na", price: 36000, unit: "Each", stock: 99, fits: ["honda-brv"], src: "https://www.pakwheels.com/accessories-spare-parts/koyorad-radiator-for-honda-brv-11755610", checked: "2026-10-04",
+    specs: [["Brand","Koyorad"],["Listed fitment","Honda BR-V 1.5L L15Z i-VTEC (2017–2026)"],["Pack","Each"],["Source listing","PakWheels #11755610"]],
+    desc: "Aftermarket radiator from Koyorad, listed for Honda BR-V 1.5L L15Z i-VTEC (2017–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-11863170", sku: "PW-11863170", oem: null, brand: "Unbranded", grade: "performance", title: "MG HS Water Pump", category: "cooling", sub: "Water pumps", art: "pump", position: "na", price: 20000, unit: "Each", stock: 99, fits: ["mg-hs"], src: "https://www.pakwheels.com/accessories-spare-parts/mg-hs-water-pump-11863170", checked: "2026-10-04",
+    specs: [["Brand","Unbranded"],["Listed fitment","MG HS 1.5L Turbo 15E4E (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #11863170"]],
+    desc: "Aftermarket water pump from Unbranded, listed for MG HS 1.5L Turbo 15E4E (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-10685507", sku: "PW-10685507", oem: null, brand: "Changan OEM", grade: "oem", title: "Changan Alsvin Oxygen Sensor OEM", category: "electrical", sub: "Sensors", art: "sensor", position: "na", price: 9960, was: 12000, unit: "Each", stock: 99, fits: ["changan-alsvin"], src: "https://www.pakwheels.com/accessories-spare-parts/changan-alsvin-oxygen-sensor-oem-10685507", checked: "2026-10-04",
+    specs: [["Brand","Changan OEM"],["Listed fitment","Changan Alsvin 1.5L JL473Q (2021–2026)"],["Pack","Each"],["Source listing","PakWheels #10685507"]],
+    desc: "Genuine / OEM sensor from Changan OEM, listed for Changan Alsvin 1.5L JL473Q (2021–2026). Price as listed on PakWheels Auto Store; confirm against your old part number before fitting."
+  },
+  {
+    id: "pw-13504574", sku: "PW-13504574", oem: null, brand: "AGS", grade: "performance", title: "AGS Battery 38A — 11 Plate", category: "electrical", sub: "Batteries", art: "battery", position: "na", price: 6500, unit: "Each", stock: 99, fits: ["universal"], src: "https://www.pakwheels.com/accessories-spare-parts/ags-battery-38a-11-plate-13504574", checked: "2026-10-04",
+    specs: [["Brand","AGS"],["Listed fitment","Universal — match the spec to your owner’s manual"],["Pack","Each"],["Source listing","PakWheels #13504574"]],
+    desc: "AGS Battery 38A — 11 Plate from AGS. Not vehicle-specific — check the grade or spec your owner’s manual calls for before buying. Price as listed on PakWheels Auto Store."
   }
 ];
