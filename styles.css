@@ -296,6 +296,14 @@ input[type="radio"]:checked::after { content: ""; width: 8px; height: 8px; borde
 }
 .media svg { width: 78%; height: 78%; transition: transform .2s; }
 .card:hover .media svg { transform: scale(1.04); }
+.media.has-photo { background: var(--surface); border: 1px solid var(--slate-200); }
+.media .photo { width: 100%; height: 100%; object-fit: contain; transition: transform .2s; }
+.media.has-photo > svg { display: none; }
+.media.has-photo.no-photo { background-color: var(--slate-100); border: 0; }
+.media.no-photo > svg { display: block; }
+.media.no-photo .photo { display: none; }
+.card:hover .media .photo { transform: scale(1.04); }
+.photo-credit { margin-top: 8px; }
 .media-tag { position: absolute; left: 8px; bottom: 8px; background: rgba(15,23,42,.88); color: #fff; padding: 2px 6px; border-radius: var(--r-sm); }
 .media-sku { position: absolute; right: 8px; top: 8px; color: var(--spec-blue); }
 .brand-line { color: var(--orange-cta); }

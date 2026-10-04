@@ -189,6 +189,9 @@
       return s;
     },
   };
+  // Listing photo when we have one; the blueprint drawing stays underneath as the fallback if it fails to load.
+  const mediaCls = (p) => 'media' + (p.img ? ' has-photo' : '');
+  const pic = (p) => (p.img ? `<img class="photo" src="${esc(p.img)}" alt="${esc(p.title)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('no-photo')">` : '') + art(p.art);
   const art = (type) => `<svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${(ART[type] || ART.oilfilter)()}</svg>`;
 
   // ---------- small renderers ----------
@@ -224,10 +227,10 @@
   function cardHTML(p) {
     const inCompare = state.compare.includes(p.id);
     return `<article class="card">
-      <div class="card-media-col"><div class="media">${art(p.art)}</div></div>
+      <div class="card-media-col"><div class="${mediaCls(p)}">${pic(p)}</div></div>
       <div class="card-body">
         <div class="card-badges">${gradeBadge(p)}${p.was ? `<span class="badge badge-sale spec-sm">Save ${savePct(p)}%</span>` : ''}</div>
-        <div class="media">${art(p.art)}<span class="media-tag spec-sm">${esc(p.sub)}</span></div>
+        <div class="${mediaCls(p)}">${pic(p)}<span class="media-tag spec-sm">${esc(p.sub)}</span></div>
         <div>
           <p class="brand-line label-caps">${esc(p.brand)}</p>
           <h3 class="card-title"><a href="#/p/${p.id}">${esc(p.title)}</a></h3>
@@ -475,7 +478,8 @@
     main.innerHTML = `<div class="wrap page">
       <div class="pdp">
         <div class="pdp-media">
-          <div class="media">${art(p.art)}<span class="media-tag spec-sm">FIG. 1 — ${esc(p.sub)}</span><span class="media-sku spec-sm">${esc(p.sku)}</span></div>
+          <div class="${mediaCls(p)}">${pic(p)}<span class="media-tag spec-sm">${esc(p.sub)}</span><span class="media-sku spec-sm">${esc(p.sku)}</span></div>
+          ${p.img ? `<p class="spec-sm muted photo-credit">Photo: <a class="link" href="${esc(p.src)}" target="_blank" rel="noopener">PakWheels listing</a></p>` : ''}
           <div class="dims">${p.specs.slice(0, 2).map(([k, val]) => `<span class="badge badge-after spec-sm">${esc(k)}: ${esc(val)}</span>`).join('')}</div>
         </div>
         <div class="pdp-info">
@@ -550,7 +554,7 @@
   function lineHTML(x, editable) {
     const p = x.p, s = fitStatus(p), max = Math.min(p.stock, 99);
     return `<li class="line">
-      <a class="media" href="#/p/${p.id}" tabindex="-1" aria-hidden="true">${art(p.art)}</a>
+      <a class="${mediaCls(p)}" href="#/p/${p.id}" tabindex="-1" aria-hidden="true">${pic(p)}</a>
       <div>
         <a class="line-title" href="#/p/${p.id}">${esc(p.title)}</a>
         <p class="spec-sm muted">${esc(p.sku)} · ${money(p.price)}${p.core ? ` + ${money(p.core)} core` : ''}</p>
@@ -928,7 +932,7 @@
     const fitTxt = { fit: 'Fits', nofit: 'Doesn’t fit', universal: 'Universal', unknown: 'Set vehicle' };
     const dlg = $('#compare-dialog');
     dlg.innerHTML = `<div class="drawer-head"><h2 id="compare-title">Compare parts</h2><button class="icon-btn" type="button" data-act="compare-close" aria-label="Close comparison">${icon('x')}</button></div>
-      <div style="overflow-x:auto"><table class="spec-table compare-table"><thead><tr><th scope="col"><span class="sr-only">Attribute</span></th>${items.map((p) => `<th scope="col"><div class="media">${art(p.art)}</div><a href="#/p/${p.id}">${esc(p.title)}</a></th>`).join('')}</tr></thead><tbody>
+      <div style="overflow-x:auto"><table class="spec-table compare-table"><thead><tr><th scope="col"><span class="sr-only">Attribute</span></th>${items.map((p) => `<th scope="col"><div class="${mediaCls(p)}">${pic(p)}</div><a href="#/p/${p.id}">${esc(p.title)}</a></th>`).join('')}</tr></thead><tbody>
         ${row('Price', (p) => `<b class="mono">${money(p.price)}</b>`)}
         ${row('Fitment', (p) => `<span class="fit-txt ${fitStatus(p)}">${fitTxt[fitStatus(p)]}</span>`)}
         ${row('Brand', (p) => esc(p.brand))}
