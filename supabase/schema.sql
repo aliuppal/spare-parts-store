@@ -46,7 +46,7 @@ create table if not exists public.vehicles (
 );
 
 create table if not exists public.products (
-  id               text primary key,            -- 'pw-<pakwheels id>' for imported, 'ax-<random>' for admin-created
+  id               text primary key,            -- 'pw-<number>' for the original catalog, 'ax-<random>' for admin-created
   sku              text,
   part_no          text,
   brand            text not null,
@@ -61,7 +61,7 @@ create table if not exists public.products (
   unit             text not null default 'Each',
   universal        boolean not null default false,
   description      text,
-  source_url       text,                        -- PakWheels listing the price/photo came from
+  source_url       text,                        -- optional reference link
   price_checked_at date,
   active           boolean not null default true,
   created_at       timestamptz not null default now(),
@@ -137,7 +137,7 @@ drop policy if exists "admin write" on public.product_images;
 create policy "admin write" on public.product_images for all using (public.is_admin()) with check (public.is_admin());
 
 -- ---------------------------------------------------------------------------
--- Categories (vehicles and products are loaded by supabase/seed.mjs)
+-- Categories (vehicles and products are managed on the admin page)
 -- ---------------------------------------------------------------------------
 insert into public.categories (id, name, sort) values
   ('brakes', 'Brakes', 1),

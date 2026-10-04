@@ -1,5 +1,5 @@
 /* Admin page (#/admin): manage products (photo stored as base64 in Supabase, vehicle fitment
-   tags), vehicles, and PakWheels price refresh. Only shown to admins; Supabase RLS enforces it. */
+   tags), vehicles and orders. Only shown to admins; Supabase RLS enforces it. */
 (() => {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s);
@@ -67,8 +67,8 @@
         `<button class="btn btn-outline" type="button" data-acct="signout">Sign out</button><a class="btn btn-primary" href="#/shop">Back to the shop</a>`);
       return;
     }
-    const tab = ['vehicles', 'prices', 'orders'].includes(route[0]) ? route[0] : 'products';
-    const titles = { products: 'Products', vehicles: 'Vehicles', prices: 'PakWheels prices', orders: 'Orders' };
+    const tab = ['vehicles', 'orders'].includes(route[0]) ? route[0] : 'products';
+    const titles = { products: 'Products', vehicles: 'Vehicles', orders: 'Orders' };
     mount.innerHTML = `<div class="wrap page admin">
       <div class="adm-head">
         <div><p class="label-caps muted">Store admin</p><h1>${titles[tab]}</h1></div>
@@ -78,7 +78,6 @@
         <a href="#/admin/orders"${tab === 'orders' ? ' aria-current="page"' : ''}>Orders <span class="count-pill" id="adm-new-count" hidden></span></a>
         <a href="#/admin"${tab === 'products' ? ' aria-current="page"' : ''}>Products</a>
         <a href="#/admin/vehicles"${tab === 'vehicles' ? ' aria-current="page"' : ''}>Vehicles</a>
-        <a href="#/admin/prices"${tab === 'prices' ? ' aria-current="page"' : ''}>PakWheels prices</a>
       </nav>
       ${flash()}
       <div id="adm-body"><div class="skel" style="height:320px"></div></div>
@@ -96,7 +95,6 @@
     if (route[0] === 'p') return productForm(route[1]);
     if (tab === 'orders') return route[1] ? orderDetail(route[1]) : ordersView();
     if (tab === 'vehicles') return vehiclesView();
-    if (tab === 'prices') return pricesView();
     return productList();
   }
 
@@ -150,7 +148,6 @@
       id: p ? p.id : null,
       fits: p ? (p.product_fitments || []).map((f) => ({ ...f })) : [],
       image: null, imageChanged: false, imageRemoved: false,
-      checked: p ? p.price_checked_at : null,
     };
     const subs = [...new Set(data.products.map((x) => x.sub))].sort();
     const brands = [...new Set(data.products.map((x) => x.brand))].sort();
@@ -159,15 +156,6 @@
 
     $('#adm-body').innerHTML = `<form class="adm-form" id="adm-form" novalidate>
       <div class="form-error-banner" id="pf-banner" role="alert" hidden></div>
-      <section class="panel form-section">
-        <h2 class="adm-h2">${icon('search')}Fill from a PakWheels listing <span class="muted spec-sm">optional</span></h2>
-        <div class="adm-inline">
-          <label class="sr-only" for="pf-pw">PakWheels listing link</label>
-          <input class="input" id="pf-pw" type="url" inputmode="url" placeholder="https://www.pakwheels.com/accessories-spare-parts/…" value="${val('source_url')}">
-          <button class="btn btn-secondary" type="button" data-adm="pw-fetch">Fetch details</button>
-        </div>
-        <p class="hint" id="pf-pw-status">Pulls the title, current price, original price and photo from the listing.</p>
-      </section>
 
       <section class="panel form-section">
         <h2 class="adm-h2">Product details</h2>
@@ -192,11 +180,9 @@
       <section class="panel form-section">
         <h2 class="adm-h2">Price</h2>
         <div class="fields">
-          ${field('price', 'Price (Rs)', `<input class="input mono" id="pf-price" name="price" inputmode="numeric" value="${val('price')}" required>`, 'third')}
-          ${field('was', 'Original price (Rs)', `<input class="input mono" id="pf-was" name="was" inputmode="numeric" value="${val('was')}">`, 'third', 'Leave empty if not on sale.')}
-          ${field('source_url', 'Source listing', `<input class="input" id="pf-source_url" name="source_url" type="url" value="${val('source_url')}">`, 'third')}
+          ${field('price', 'Price (Rs)', `<input class="input mono" id="pf-price" name="price" inputmode="numeric" value="${val('price')}" required>`, 'half')}
+          ${field('was', 'Original price (Rs)', `<input class="input mono" id="pf-was" name="was" inputmode="numeric" value="${val('was')}">`, 'half', 'Leave empty if not on sale.')}
         </div>
-        <p class="hint" id="pf-checked">${form.checked ? `Price last checked on PakWheels: ${esc(form.checked)}` : 'Not checked against PakWheels yet.'}</p>
       </section>
 
       <section class="panel form-section">
@@ -271,15 +257,14 @@
       title: get('title'), brand: get('brand'), part_no: get('part_no') || null, category: get('category'), sub: get('sub'),
       grade: (f.querySelector('[name="grade"]:checked') || {}).value || 'aftermarket',
       position: get('position'), unit: get('unit') || 'Each', art: get('art'), description: get('description') || null,
-      active: f.elements.active.checked, price: int(get('price')), was: int(get('was')), source_url: get('source_url') || null,
-      universal: $('#pf-universal').checked, price_checked_at: form.checked || null,
+      active: f.elements.active.checked, price: int(get('price')), was: int(get('was')),
+      universal: $('#pf-universal').checked,
     };
     const errs = [];
     const need = (k, label) => { if (!row[k]) { setErr(k, `${label} is required`); errs.push(k); } else setErr(k, ''); };
     need('title', 'Title'); need('brand', 'Brand'); need('category', 'Category'); need('sub', 'Part type');
     if (!Number.isInteger(row.price) || row.price <= 0) { setErr('price', 'Enter the price in whole rupees, e.g. 5499'); errs.push('price'); } else setErr('price', '');
     if (row.was != null && (!Number.isInteger(row.was) || row.was <= (row.price || 0))) { setErr('was', 'Original price must be higher than the price'); errs.push('was'); } else setErr('was', '');
-    if (row.source_url && !/^https?:\/\//.test(row.source_url)) { setErr('source_url', 'Use a full https:// link'); errs.push('source_url'); } else setErr('source_url', '');
     const fitsErr = $('#pf-fits-err');
     if (!row.universal && !form.fits.length) {
       fitsErr.hidden = false; fitsErr.innerHTML = `${icon('alert', 'icon-sm')}Tag at least one vehicle, or mark the product as universal`; errs.push('fits');
@@ -317,7 +302,7 @@
         r = await s.from('product_images').delete().eq('product_id', id);
         if (r.error) throw r.error;
       } else if (form.imageChanged && form.image) {
-        r = await s.from('product_images').upsert({ product_id: id, mime: form.image.mime, data_base64: form.image.base64, source_url: form.image.source_url || null });
+        r = await s.from('product_images').upsert({ product_id: id, mime: form.image.mime, data_base64: form.image.base64 });
         if (r.error) throw r.error;
       }
       reloadWith(`${form.id ? 'Saved' : 'Created'} “${row.title}”`);
@@ -354,55 +339,13 @@
       if (!url.startsWith('data:image/webp')) url = c.toDataURL('image/jpeg', 0.85); // Safari can't encode WebP
       const [, mime, base64] = url.match(/^data:([^;]+);base64,(.*)$/);
       if (base64.length > MAX_IMAGE_CHARS) throw new Error('That photo is still too large after resizing — try a smaller one');
-      form.image = { mime, base64, source_url: null };
+      form.image = { mime, base64 };
       form.imageChanged = true;
       form.imageRemoved = false;
       showPreview(url);
     } catch (e) {
       err.hidden = false;
       err.textContent = e.message;
-    }
-  }
-
-  async function pwFetch() {
-    const url = $('#pf-pw').value.trim();
-    const status = $('#pf-pw-status');
-    const btn = $('[data-adm="pw-fetch"]');
-    if (!/^https:\/\/www\.pakwheels\.com\/accessories-spare-parts\//.test(url)) {
-      status.className = 'field-error';
-      status.innerHTML = `${icon('alert', 'icon-sm')}Paste a link that starts with https://www.pakwheels.com/accessories-spare-parts/`;
-      return;
-    }
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>Fetching…';
-    status.className = 'hint';
-    status.textContent = 'Reading the listing…';
-    try {
-      const token = await A().token();
-      const r = await fetch(`/api/pakwheels?url=${encodeURIComponent(url)}`, { headers: { Authorization: `Bearer ${token}` } });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok) throw new Error(d.error || `Request failed (${r.status})`);
-      const f = $('#adm-form');
-      if (d.title && !f.elements.title.value.trim()) f.elements.title.value = d.title;
-      f.elements.price.value = d.price;
-      f.elements.was.value = d.was || '';
-      f.elements.source_url.value = url;
-      form.checked = d.checked;
-      $('#pf-checked').textContent = `Price last checked on PakWheels: ${d.checked}`;
-      if (d.image) {
-        form.image = { mime: d.image.mime, base64: d.image.base64, source_url: d.image_url };
-        form.imageChanged = true;
-        form.imageRemoved = false;
-        showPreview(`data:${d.image.mime};base64,${d.image.base64}`);
-      }
-      status.className = 'hint';
-      status.textContent = `Filled from PakWheels: ${money(d.price)}${d.was ? ` (was ${money(d.was)})` : ''}${d.image ? ' and the photo' : ''}. Review the details, then save.`;
-    } catch (e) {
-      status.className = 'field-error';
-      status.innerHTML = `${icon('alert', 'icon-sm')}${esc(e.message)}`;
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Fetch details';
     }
   }
 
@@ -576,71 +519,11 @@
     reloadWith(`Deleted ${v.make} ${v.model}`, '#/admin/vehicles');
   }
 
-  // ---------- PakWheels price refresh ----------
-  function pricesView() {
-    const linked = data.products.filter((p) => p.source_url);
-    $('#adm-body').innerHTML = `
-      <div class="panel form-section">
-        <h2 class="adm-h2">Refresh prices from PakWheels</h2>
-        <p class="hint">${linked.length} of ${data.products.length} products link to a PakWheels listing. Refreshing reads each listing's current price and original price and updates the shop.</p>
-        <button class="btn btn-primary btn-lg" type="button" data-adm="refresh-all"${linked.length ? '' : ' disabled'}>Refresh ${linked.length} prices</button>
-        <p class="hint" id="pr-status" role="status"></p>
-      </div>
-      <div class="panel adm-table-wrap"><table class="adm-table">
-        <thead><tr><th scope="col">Product</th><th scope="col">Price</th><th scope="col">Last checked</th><th scope="col">Result</th></tr></thead>
-        <tbody>${linked.map((p) => `<tr data-row="${esc(p.id)}">
-          <td><a class="adm-title" href="#/admin/p/${esc(p.id)}">${esc(p.title)}</a></td>
-          <td class="mono" data-cell="price">${money(p.price)}</td>
-          <td class="mono" data-cell="checked">${esc(p.price_checked_at || '—')}</td>
-          <td data-cell="result" class="spec-sm muted">—</td>
-        </tr>`).join('')}</tbody></table></div>`;
-  }
-
-  async function refreshAll() {
-    const btn = $('[data-adm="refresh-all"]');
-    const status = $('#pr-status');
-    btn.disabled = true;
-    const linked = data.products.filter((p) => p.source_url);
-    const token = await A().token();
-    let done = 0; let changed = 0; let failed = 0;
-    const queue = [...linked];
-    const cell = (id, k) => $(`[data-row="${CSS.escape(id)}"] [data-cell="${k}"]`);
-    async function one(p) {
-      const res = cell(p.id, 'result');
-      try {
-        const r = await fetch(`/api/pakwheels?image=0&url=${encodeURIComponent(p.source_url)}`, { headers: { Authorization: `Bearer ${token}` } });
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
-        const was = d.was && d.was > d.price ? d.was : null;
-        const u = await sb().from('products').update({ price: d.price, was, price_checked_at: d.checked }).eq('id', p.id);
-        if (u.error) throw u.error;
-        cell(p.id, 'checked').textContent = d.checked;
-        if (d.price !== p.price) {
-          changed++;
-          cell(p.id, 'price').innerHTML = `${money(d.price)} <span class="spec-sm muted"><s>${money(p.price)}</s></span>`;
-          res.textContent = d.price > p.price ? 'Price went up' : 'Price went down';
-          res.className = 'spec-sm';
-        } else { res.textContent = 'No change'; }
-        Object.assign(p, { price: d.price, was, price_checked_at: d.checked });
-      } catch (e) {
-        failed++;
-        res.textContent = e.message;
-        res.className = 'spec-sm field-error';
-      }
-      done++;
-      status.textContent = `Checked ${done} of ${linked.length} · ${changed} changed · ${failed} failed`;
-    }
-    await Promise.all(Array.from({ length: 3 }, async () => { while (queue.length) await one(queue.shift()); }));
-    status.innerHTML = `Done: ${changed} price${changed === 1 ? '' : 's'} changed, ${failed} failed. <button class="link" type="button" onclick="location.reload()">Reload the shop to see them</button>`;
-    btn.disabled = false;
-  }
-
   // ---------- events ----------
   document.addEventListener('click', (e) => {
     const t = e.target.closest('[data-adm]');
     if (!t || !mount || !mount.contains(t)) return;
     const act = t.dataset.adm;
-    if (act === 'pw-fetch') pwFetch();
     if (act === 'fit-add') {
       const vid = $('#pf-veh').value;
       const v = data.vehicles.find((x) => x.id === vid);
@@ -658,7 +541,6 @@
     if (act === 'img-remove') { form.image = null; form.imageRemoved = true; form.imageChanged = false; showPreview(null); }
     if (act === 'delete') deleteProduct();
     if (act === 'veh-rm') removeVehicle(t.dataset.id);
-    if (act === 'refresh-all') refreshAll();
     if (act === 'order-filter') { orderFilter = t.dataset.f; ordersView(); }
   });
   document.addEventListener('change', (e) => {
