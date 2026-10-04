@@ -390,6 +390,13 @@
       <div class="actions"><button class="btn btn-secondary" type="button" data-act="clear-filters">Clear all filters</button></div></div>`;
   }
 
+  // First, last, and current ±1, with "…" for gaps — keeps the pager narrow on phones.
+  function pageList(cur, pages) {
+    const keep = new Set([1, pages, cur - 1, cur, cur + 1].filter((n) => n >= 1 && n <= pages));
+    const out = [];
+    [...keep].sort((a, b) => a - b).forEach((n, i, arr) => { if (i && n - arr[i - 1] > 1) out.push('…'); out.push(n); });
+    return out;
+  }
   function renderCatalog() {
     const f = state.f, v = vehicle();
     const list = sortList(filtered());
@@ -405,7 +412,7 @@
 
     const pager = pages > 1 ? `<div class="panel panel-pad pager"><span class="muted">Showing <b>${from}–${to}</b> of <b>${total}</b></span><div class="pager-btns">
         <button type="button" data-act="page" data-page="${f.page - 1}" aria-label="Previous page"${f.page === 1 ? ' disabled' : ''}>${icon('left', 'icon-sm')}</button>
-        ${Array.from({ length: pages }, (_, i) => `<button type="button" data-act="page" data-page="${i + 1}"${i + 1 === f.page ? ' aria-current="page"' : ''} aria-label="Page ${i + 1}">${i + 1}</button>`).join('')}
+        ${pageList(f.page, pages).map((n) => n === '…' ? '<span class="pager-gap" aria-hidden="true">…</span>' : `<button type="button" data-act="page" data-page="${n}"${n === f.page ? ' aria-current="page"' : ''} aria-label="Page ${n}">${n}</button>`).join('')}
         <button type="button" data-act="page" data-page="${f.page + 1}" aria-label="Next page"${f.page === pages ? ' disabled' : ''}>${icon('right', 'icon-sm')}</button></div></div>` : '';
 
     preserveFocus(() => {
@@ -834,6 +841,7 @@
       dock.innerHTML = `<div class="wrap">
         <div class="dock-head"><div class="dock-shield">${icon('shield', 'icon-lg')}</div>
           <div><h2>Find parts guaranteed to fit your exact vehicle</h2><p class="dock-sub spec-sm">Year → make → model → engine. We hide parts that won't bolt on.</p></div></div>
+        <button class="btn btn-primary btn-lg dock-mobile" type="button" data-act="garage">${icon('car')}Select your vehicle</button>
         <form class="dock-form" id="dock-form" data-vehicle-form="dk" aria-label="Select your vehicle">
           ${vehicleSelectsHTML('dk')}
           <button class="btn btn-primary" type="submit" data-key="dk:go">${icon('search')}Find my parts</button>
@@ -1022,6 +1030,7 @@
       case 'page': { const n = +t.dataset.page; if (n >= 1) { f.page = n; renderCatalog(); $('#results-title').scrollIntoView({ behavior: 'smooth', block: 'center' }); } break; }
       case 'view': state.view = t.dataset.view; store.set('apex.view', state.view); renderCatalog(); break;
       case 'dock-edit': {
+        if (window.matchMedia('(max-width: 767px)').matches) { focusGarage(); break; } // inline form is hidden on phones
         const v = vehicle();
         state.dockEditing = true;
         state.draft = { year: String(v.year), make: v.make, model: v.model, id: v.id };

@@ -135,7 +135,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .search select { border: 0; border-right: 1px solid var(--slate-300); background: var(--slate-100); padding: 0 10px; font: 500 12px var(--font-mono); max-width: 150px; }
 .search-input { flex: 1; display: flex; align-items: center; gap: 8px; padding: 0 10px; color: var(--slate-500); }
 .search input { flex: 1; min-width: 0; border: 0; outline: 0; padding: 10px 0; color: var(--slate-950); background: transparent; }
-.search .btn { border-radius: 0; }
+.search .btn { border-radius: 0; flex: none; }
+.search-input { min-width: 0; }
 .header-actions { display: flex; align-items: center; gap: 12px; flex: none; }
 .garage-chip {
   display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 5px; border-radius: var(--r);
@@ -187,6 +188,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .dock-select label { position: absolute; left: 8px; top: -7px; padding: 0 4px; background: var(--slate-950); color: var(--slate-300); font-size: 9px; line-height: 12px; }
 .fit-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: var(--r); background: var(--fit-tint); color: var(--fit-ink); border: 1px solid #6EE7B7; }
 .dock-loaded { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.dock-mobile { display: none; }
 .dock-loaded .veh { font: 700 18px/24px var(--font-display); }
 
 /* ---------- Breadcrumb bar ---------- */
@@ -303,8 +305,9 @@ input[type="radio"]:checked::after { content: ""; width: 8px; height: 8px; borde
 .card-title a:hover { color: var(--orange-cta); }
 .card button { position: relative; z-index: 1; }
 .specs { border: 1px solid var(--slate-200); background: var(--canvas); border-radius: var(--r); padding: 6px 8px; display: grid; gap: 3px; margin: 0; }
-.specs div { display: flex; justify-content: space-between; gap: 8px; }
-.specs dt { color: var(--slate-500); white-space: nowrap; }
+.specs { grid-template-columns: minmax(0, 1fr); }
+.specs div { display: flex; justify-content: space-between; gap: 8px; min-width: 0; }
+.specs dt { color: var(--slate-500); white-space: nowrap; flex: none; }
 .specs dd { margin: 0; min-width: 0; font-weight: 600; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rating { display: flex; align-items: center; gap: 6px; }
 .stars { display: inline-flex; gap: 1px; }
@@ -341,6 +344,8 @@ input[type="radio"]:checked::after { content: ""; width: 8px; height: 8px; borde
 .pager-btns button { min-width: 36px; height: 36px; border-radius: var(--r); border: 1px solid var(--slate-300); background: var(--surface); font: 700 12px var(--font-mono); display: grid; place-items: center; }
 .pager-btns button[aria-current="page"] { background: var(--slate-950); color: #fff; border-color: var(--slate-950); }
 .pager-btns button:disabled { opacity: .4; cursor: not-allowed; }
+.pager-btns { flex-wrap: wrap; }
+.pager-gap { min-width: 20px; display: grid; place-items: center; color: var(--slate-500); }
 
 /* Empty / error / skeleton */
 .state { text-align: center; padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -378,8 +383,8 @@ input[type="radio"]:checked::after { content: ""; width: 8px; height: 8px; borde
 .qty.sm { height: 34px; }
 .qty.sm button { width: 30px; }
 .qty.sm input { width: 34px; }
-.buy-row { display: flex; gap: 10px; }
-.buy-row .btn-primary { flex: 1; }
+.buy-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.buy-row .btn-primary { flex: 1 1 170px; }
 .spec-table { width: 100%; border-collapse: collapse; }
 .spec-table th, .spec-table td { text-align: left; padding: 9px 16px; border-bottom: 1px solid var(--slate-200); vertical-align: top; }
 .spec-table th { width: 42%; color: var(--slate-600); font-weight: 500; }
@@ -580,12 +585,30 @@ button.fitline.unknown:hover, button.notice-warn:hover { border-color: var(--uni
   .field.half, .field.third { grid-column: span 6; }
   .confirm-grid { grid-template-columns: 1fr; }
   .toolbar-controls .seg { display: none; }
+  .toolbar-controls { width: 100%; }
+  .toolbar-controls .select { flex: 1; min-width: 0; }
   .grid.is-list .card { grid-template-columns: 1fr; }
   .grid.is-list .card-media-col { display: none; }
   .grid.is-list .card-body .media { display: grid; }
   .grid.is-list .card-foot { grid-column: auto; }
   .tech-card { padding: 20px; }
   .logo { font-size: 18px; }
+
+  /* Sticky header would cover ~a quarter of a phone screen; let it scroll away. */
+  .site-header { position: static; }
+  .pdp-media, .summary { top: 16px; }
+
+  /* iOS Safari zooms into any field under 16px on focus. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px !important; }
+
+  /* Vehicle selector: one button that opens the picker dialog instead of four stacked selects. */
+  .dock .dock-form, .dock .dock-sub { display: none; }
+  .dock-mobile { display: flex; width: 100%; }
+  .dock .wrap { padding-top: 12px; padding-bottom: 12px; gap: 12px; }
+  .dock h2, .dock .veh { font-size: 15px; line-height: 20px; }
+  .dock-loaded { width: 100%; }
+  .dock-loaded .btn { flex: 1; }
+  .fit-badge { width: 100%; justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
