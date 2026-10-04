@@ -25,6 +25,11 @@ create table if not exists public.orders (
 );
 create index if not exists orders_created_idx on public.orders (created_at desc);
 
+-- "create table if not exists" doesn't touch an existing table, so re-apply the delivery rule
+-- (earlier versions allowed 'nextday' instead of 'express').
+alter table public.orders drop constraint if exists orders_shipping_method_check;
+alter table public.orders add constraint orders_shipping_method_check check (shipping_method in ('standard', 'express', 'nextday'));
+
 drop trigger if exists orders_touch on public.orders;
 create trigger orders_touch before update on public.orders
   for each row execute function public.touch_updated_at();
