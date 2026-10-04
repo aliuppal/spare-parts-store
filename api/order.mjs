@@ -19,13 +19,14 @@ async function rpc(name, body) {
   if (!r.ok) {
     const err = new Error((data && (data.message || data.hint)) || `Database error ${r.status}`);
     err.status = r.status;
+    err.code = data && data.code;
     throw err;
   }
   return data;
 }
 
 function compose(o, origin) {
-  const ship = o.shipping_method === 'nextday' ? 'Next-day' : 'Standard (3–5 business days)';
+  const ship = o.shipping_method === 'express' ? 'Express (1–2 business days)' : 'Standard (3–5 business days)';
   const lines = o.items.map((i) => `${i.qty} × ${i.title} (${i.sku}) — ${money(i.line_total)}`);
   const text = [
     `New cash-on-delivery order ${o.id}`,
@@ -108,8 +109,11 @@ export default async function handler(req, res) {
   try {
     order = await rpc('place_order', { p: payload });
   } catch (e) {
-    // place_order raises plain-language validation messages (e.g. "Enter your city").
-    return res.status(e.status && e.status < 500 ? 400 : 502).json({ error: e.message });
+    // place_order raises plain-language validation messages (SQLSTATE P0001, e.g. "Enter your city");
+    // anything else is an internal problem the customer can't fix, so don't show its details.
+    if (e.code === 'P0001') return res.status(400).json({ error: e.message });
+    console.error('place_order failed:', e.code, e.message);
+    return res.status(502).json({ error: 'We couldn’t place your order right now. Please try again in a minute, or call us to order.' });
   }
 
   let emailed = false;

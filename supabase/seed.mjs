@@ -64,7 +64,7 @@ async function importProduct(p) {
   await upsert('products', [{
     id: p.id,
     sku: p.sku,
-    part_no: p.sku && !p.sku.startsWith('PW-') ? p.sku : null,
+    part_no: p.sku && !/^(PW|TK)-/.test(p.sku) ? p.sku : null,
     brand: p.brand,
     grade: p.grade === 'oem' ? 'oem' : 'aftermarket',
     title: p.title,

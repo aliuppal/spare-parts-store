@@ -465,7 +465,7 @@
       <div class="adm-order-main">
         <section class="panel form-section">
           <div class="adm-order-head"><h2 class="adm-h2 mono">${esc(o.id)}</h2>${statusBadge(o.status)}</div>
-          <p class="spec-sm muted">Placed ${new Date(o.created_at).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })} · ${o.shipping_method === 'nextday' ? 'Next-day' : 'Standard'} delivery · Cash on delivery · ${o.email_sent ? 'Emailed to admins' : 'Not emailed'}</p>
+          <p class="spec-sm muted">Placed ${new Date(o.created_at).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })} · ${o.shipping_method === 'express' ? 'Express' : 'Standard'} delivery · Cash on delivery · ${o.email_sent ? 'Emailed to admins' : 'Not emailed'}</p>
         </section>
         <section class="panel">
           <div class="section-title"><h2 class="label-caps">Items</h2>${o.vehicle ? `<span class="spec-sm muted">For ${esc(o.vehicle)}</span>` : ''}</div>

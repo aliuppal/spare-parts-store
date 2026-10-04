@@ -30,7 +30,7 @@
   const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
   const catName = (id) => (CATEGORIES.find((c) => c.id === id) || {}).name || id;
   const PAGE = 9;
-  const FREE_SHIP = 20000, STD_SHIP = 2500, NEXT_DAY = 7000; // PKR — keep in sync with place_order() in supabase/orders.sql
+  const STD_SHIP = 300, EXPRESS_SHIP = 600; // PKR, flat — keep in sync with place_order() in supabase/orders.sql
   const PRICE_STEP = 1000;
   const PRICE_CEIL = Math.ceil(Math.max(...PRODUCTS.map((p) => p.price)) / 10000) * 10000;
   const YEARS = (() => { const lo = Math.min(...VEHICLES.map((v) => v.years[0])); const hi = Math.max(...VEHICLES.map((v) => v.years[1])); const out = []; for (let y = hi; y >= lo; y--) out.push(y); return out; })();
@@ -215,8 +215,6 @@
       ? `<span class="badge badge-oem spec-sm">${p.oem ? 'OEM #' + esc(p.oem) : 'Genuine / OEM'}</span>`
       : `<span class="badge badge-after spec-sm">Aftermarket</span>`;
   }
-  const sourceLine = (p) => p.src
-    ? `<p class="spec-sm muted source-line">${icon('info', 'icon-sm')}<span>Price as listed on <a class="link" href="${esc(p.src)}" target="_blank" rel="noopener">PakWheels</a>, checked ${esc(p.checked)}</span></p>` : '';
   function fitLine(p) {
     const v = vehicle();
     const s = fitStatus(p);
@@ -482,7 +480,6 @@
       <div class="pdp">
         <div class="pdp-media">
           <div class="${mediaCls(p)}">${pic(p)}<span class="media-tag spec-sm">${esc(p.sub)}</span><span class="media-sku spec-sm">${esc(p.sku)}</span></div>
-          ${p.img ? `<p class="spec-sm muted photo-credit">Photo: <a class="link" href="${esc(p.src)}" target="_blank" rel="noopener">PakWheels listing</a></p>` : ''}
           <div class="dims">${p.specs.slice(0, 2).map(([k, val]) => `<span class="badge badge-after spec-sm">${esc(k)}: ${esc(val)}</span>`).join('')}</div>
         </div>
         <div class="pdp-info">
@@ -506,7 +503,7 @@
               </div>
               <button class="btn btn-secondary btn-lg btn-block" type="button" data-act="buy-now" data-id="${p.id}">Buy now</button>`
             : `<div class="notice notice-warn">${icon('info', 'icon-sm')}Out of stock. Check back soon, or compare similar parts below.</div>`}
-            <p class="spec-sm muted" style="display:flex;gap:6px;align-items:center">${icon('truck', 'icon-sm')}Free standard shipping over ${money(FREE_SHIP)} · 60-day returns</p>
+            <p class="spec-sm muted" style="display:flex;gap:6px;align-items:center">${icon('truck', 'icon-sm')}Delivery across Pakistan: Standard ${money(STD_SHIP)} · Express ${money(EXPRESS_SHIP)} · Cash on delivery</p>
           </div>
           <p>${esc(p.desc)}</p>
           <div class="panel"><div class="section-title"><h2 class="label-caps">Technical specifications</h2></div>
@@ -549,7 +546,7 @@
     const sub = r2(items.reduce((s, x) => s + x.p.price * x.qty, 0));
     const core = r2(items.reduce((s, x) => s + (x.p.core || 0) * x.qty, 0));
     const count = items.reduce((s, x) => s + x.qty, 0);
-    const ship = !items.length ? 0 : method === 'nextday' ? NEXT_DAY : sub >= FREE_SHIP ? 0 : STD_SHIP;
+    const ship = !items.length ? 0 : method === 'express' ? EXPRESS_SHIP : STD_SHIP;
     return { items, sub, core, count, ship, total: r2(sub + core + ship) };
   }
   function lineHTML(x, editable) {
@@ -589,10 +586,8 @@
     }
     $('#cart-foot').hidden = false;
     preserveFocus(() => { $('#cart-body').innerHTML = `<ul>${t.items.map((x) => lineHTML(x, true)).join('')}</ul>`; });
-    const need = r2(FREE_SHIP - t.sub);
     $('#cart-foot').innerHTML = `
-      <div><p class="spec-sm">${need > 0 ? `Add <b>${money(need)}</b> for free standard shipping` : 'Free standard shipping unlocked'}</p>
-        <div class="ship-meter" aria-hidden="true"><span style="width:${Math.min(100, (t.sub / FREE_SHIP) * 100)}%"></span></div></div>
+      <p class="spec-sm muted">Delivery: Standard ${money(STD_SHIP)} · Express ${money(EXPRESS_SHIP)} · Cash on delivery</p>
       <div class="totals">
         <div><span>Subtotal</span><span class="mono">${money(t.sub)}</span></div>
         ${t.core ? `<div><span>Refundable core charges</span><span class="mono">${money(t.core)}</span></div>` : ''}
@@ -671,8 +666,8 @@
     if (opts) {
       preserveFocus(() => {
         opts.innerHTML = [
-          ['standard', 'Standard', '3–5 business days', t.sub >= FREE_SHIP ? 'Free' : money(STD_SHIP)],
-          ['nextday', 'Next-day', 'Order by 3 pm for next business day', money(NEXT_DAY)],
+          ['standard', 'Standard delivery', '3–5 business days', money(STD_SHIP)],
+          ['express', 'Express delivery', '1–2 business days', money(EXPRESS_SHIP)],
         ].map(([k, n, d, price]) => `<label class="ship-opt"><span><input type="radio" name="ship" value="${k}"${shipMethod === k ? ' checked' : ''} data-ship data-key="ship:${k}"><span><b>${n}</b><span class="spec-sm muted" style="display:block">${d}</span></span></span><span class="mono">${price}</span></label>`).join('');
       });
     }
@@ -756,14 +751,14 @@
   function renderOrder(id) {
     const o = store.get('apex.orders', []).find((x) => x.id === id);
     if (!o) return renderNotFound(`We can't find order ${esc(id)}`, 'Your order history is saved in this browser. If you ordered on another device, call us with your order number.', `<a class="btn btn-outline" href="#/orders">Order history</a>`);
-    const eta = o.method === 'nextday' ? fmtDate(addBusinessDays(o.date, 1)) : `${fmtDate(addBusinessDays(o.date, 3))} – ${fmtDate(addBusinessDays(o.date, 5))}`;
+    const eta = o.method === 'express' || o.method === 'nextday' ? `${fmtDate(addBusinessDays(o.date, 1))} – ${fmtDate(addBusinessDays(o.date, 2))}` : `${fmtDate(addBusinessDays(o.date, 3))} – ${fmtDate(addBusinessDays(o.date, 5))}`;
     main.innerHTML = `<div class="wrap page"><div class="confirm">
       <div class="confirm-head">${icon('shield', 'icon-lg')}<div>
         <p class="label-caps" style="color:var(--fit-ink)">Order received</p>
         <h1>Thanks — order <span class="mono">${esc(o.id)}</span> is in</h1>
         <p style="margin-top:4px">Placed ${new Date(o.date).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}. ${o.phone ? `We'll call you on <b>${esc(o.phone)}</b> to confirm before we dispatch.` : ''}</p></div></div>
       <div class="confirm-grid">
-        <div class="panel panel-pad"><h2 class="label-caps" style="margin-bottom:8px">Payment</h2><p style="font-weight:700;font-size:16px">${o.payment === 'cod' ? `Cash on delivery — ${money(o.totals.total)}` : money(o.totals.total)}</p><p class="spec-sm muted" style="margin-top:4px">Estimated delivery ${eta} · ${o.method === 'nextday' ? 'Next-day' : 'Standard'}</p></div>
+        <div class="panel panel-pad"><h2 class="label-caps" style="margin-bottom:8px">Payment</h2><p style="font-weight:700;font-size:16px">${o.payment === 'cod' ? `Cash on delivery — ${money(o.totals.total)}` : money(o.totals.total)}</p><p class="spec-sm muted" style="margin-top:4px">Estimated delivery ${eta} · ${o.method === 'standard' ? 'Standard' : 'Express'} delivery</p></div>
         <div class="panel panel-pad"><h2 class="label-caps" style="margin-bottom:8px">Deliver to</h2><p>${esc(o.ship.name)}<br>${esc(o.ship.address)}<br>${esc(o.ship.city)}${o.ship.region ? `, ${esc(o.ship.region)} ${esc(o.ship.zip || '')}` : ''}</p></div>
       </div>
       <div class="panel" style="margin-top:16px"><div class="section-title"><h2 class="label-caps">Items</h2>${o.vehicle ? `<span class="spec-sm muted">For ${esc(o.vehicle)}</span>` : ''}</div>

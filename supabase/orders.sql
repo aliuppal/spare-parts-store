@@ -15,7 +15,7 @@ create table if not exists public.orders (
   customer_notes   text,
   admin_notes      text,
   payment_method   text not null default 'cod' check (payment_method = 'cod'),
-  shipping_method  text not null check (shipping_method in ('standard', 'nextday')),
+  shipping_method  text not null check (shipping_method in ('standard', 'express')),
   vehicle          text,
   items            jsonb not null,                        -- [{product_id, title, sku, qty, price, line_total}]
   subtotal         int  not null,
@@ -69,7 +69,7 @@ begin
   if length(v_address) < 5 or length(v_address) > 300 then raise exception 'Enter your full delivery address'; end if;
   if length(v_city) < 2 or length(v_city) > 80 then raise exception 'Enter your city'; end if;
   if v_notes is not null and length(v_notes) > 1000 then raise exception 'Order notes can be up to 1000 characters'; end if;
-  if v_method not in ('standard', 'nextday') then raise exception 'Choose a delivery option'; end if;
+  if v_method not in ('standard', 'express') then raise exception 'Choose a delivery option'; end if;
   if jsonb_typeof(p->'items') is distinct from 'array' or jsonb_array_length(p->'items') = 0 then raise exception 'Your cart is empty'; end if;
   if jsonb_array_length(p->'items') > 50 then raise exception 'Too many different items in one order'; end if;
 
@@ -82,8 +82,8 @@ begin
     v_sub := v_sub + r.price * v_qty;
   end loop;
 
-  -- Keep in sync with FREE_SHIP / STD_SHIP / NEXT_DAY in app.js
-  v_ship := case when v_method = 'nextday' then 7000 when v_sub >= 20000 then 0 else 2500 end;
+  -- Flat delivery charges in PKR. Keep in sync with STD_SHIP / EXPRESS_SHIP in app.js.
+  v_ship := case when v_method = 'express' then 600 else 300 end;
 
   loop
     v_id := 'TA-' || lpad(floor(random() * 1000000)::int::text, 6, '0');

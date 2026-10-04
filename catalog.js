@@ -111,8 +111,6 @@
       const specs = [['Brand', r.brand]];
       if (r.part_no) specs.push(['Part no.', r.part_no]);
       specs.push(['Listed fitment', listedFit(fits, vehicles)], ['Pack', r.unit]);
-      const pwId = r.source_url && (r.source_url.match(/-(\d+)$/) || [])[1];
-      if (pwId) specs.push(['Source listing', `PakWheels #${pwId}`]);
       return {
         id: r.id,
         sku: r.sku || r.part_no || r.id.toUpperCase(),
