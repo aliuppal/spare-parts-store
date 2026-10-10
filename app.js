@@ -65,13 +65,16 @@
     return { id, v, from, to };
   }
   const fitEntries = (p) => p.fits.filter((f) => f !== 'universal').map(parseFit).filter((e) => e.v);
+  // Departments whose products have nothing to do with vehicles — no fitment UI at all.
+  const NO_FIT_CATS = new Set(['medical', 'cosmetics']);
   function fitStatus(p) {
+    if (NO_FIT_CATS.has(p.category)) return 'na';
     if (p.fits.includes('universal')) return 'universal';
     if (!state.vehicle) return 'unknown';
     const { id, year } = state.vehicle;
     return fitEntries(p).some((e) => e.id === id && e.from <= year && year <= e.to) ? 'fit' : 'nofit';
   }
-  const fitRank = { fit: 0, universal: 1, unknown: 1, nofit: 2 };
+  const fitRank = { fit: 0, universal: 1, unknown: 1, na: 1, nofit: 2 };
 
   // ---------- part drawings (blueprint style SVG) ----------
   const DIM = '#0284C7';
@@ -221,6 +224,7 @@
     if (s === 'fit') return `<p class="fitline fit spec-sm">${icon('check', 'icon-sm')}Fits your ${esc(vShort(v))}</p>`;
     if (s === 'nofit') return `<p class="fitline nofit spec-sm">${icon('x', 'icon-sm')}Doesn't fit your ${esc(vShort(v))}</p>`;
     if (s === 'universal') return `<p class="fitline universal spec-sm">${icon('info', 'icon-sm')}Universal fitment — check specs</p>`;
+    if (s === 'na') return '';
     return `<button type="button" class="fitline unknown spec-sm" data-act="garage">${icon('car', 'icon-sm')}Add your vehicle to confirm fit</button>`;
   }
   const savePct = (p) => Math.round((1 - p.price / p.was) * 100);
@@ -472,6 +476,7 @@
       nofit: () => `<div class="fit-box nofit">${icon('alert', 'icon-lg')}<div><h3>Doesn't fit your ${esc(vFull(v))}</h3><p>This part is listed for ${fits.map(({ v: x, from, to }) => esc(`${x.make} ${x.model} ${x.engine} (${from}–${to})`)).join('; ')}.</p><p style="margin-top:8px"><a class="link" href="#/c/${p.category}">Find ${esc(catName(p.category).toLowerCase())} that fit</a></p></div></div>`,
       universal: () => `<div class="fit-box universal">${icon('info', 'icon-lg')}<div><h3>Universal fitment</h3><p>Not vehicle-specific. Check the specifications below against your application.</p></div></div>`,
       unknown: () => `<div class="fit-box unknown">${icon('car', 'icon-lg')}<div><h3>Will this fit?</h3><p>Add your vehicle and we'll confirm the fit before you buy.</p><p style="margin-top:8px"><button class="link" type="button" data-act="garage">Add my vehicle</button></p></div></div>`,
+      na: () => '',
     }[s]();
     const related = sortList(PRODUCTS.filter((x) => x.id !== p.id && x.category === p.category)).slice(0, 3);
     const max = Math.min(p.stock, 99);
@@ -913,7 +918,7 @@
     const items = state.compare.map((id) => byId[id]);
     const keys = [...new Set(items.flatMap((p) => p.specs.map(([k]) => k)))];
     const row = (label, fn) => `<tr><th scope="row">${label}</th>${items.map((p) => `<td>${fn(p)}</td>`).join('')}</tr>`;
-    const fitTxt = { fit: 'Fits', nofit: 'Doesn’t fit', universal: 'Universal', unknown: 'Set vehicle' };
+    const fitTxt = { fit: 'Fits', nofit: 'Doesn’t fit', universal: 'Universal', unknown: 'Set vehicle', na: '—' };
     const dlg = $('#compare-dialog');
     dlg.innerHTML = `<div class="drawer-head"><h2 id="compare-title">Compare parts</h2><button class="icon-btn" type="button" data-act="compare-close" aria-label="Close comparison">${icon('x')}</button></div>
       <div style="overflow-x:auto"><table class="spec-table compare-table"><thead><tr><th scope="col"><span class="sr-only">Attribute</span></th>${items.map((p) => `<th scope="col"><div class="${mediaCls(p)}">${pic(p)}</div><a href="#/p/${p.id}">${esc(p.title)}</a></th>`).join('')}</tr></thead><tbody>
